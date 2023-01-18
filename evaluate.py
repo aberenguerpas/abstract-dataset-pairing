@@ -1,4 +1,4 @@
-import os
+import os, re
 import json
 import torch
 import requests
@@ -7,8 +7,11 @@ import pandas as pd
 from tqdm import tqdm
 import argparse
 
-def getEmbeddings(data):
+def convert (camel_input):
+    words = re.findall(r'[A-Z]?[a-z]+|[A-Z]{2,}(?=[A-Z][a-z]|\d|\W|$)|\d+', camel_input)
+    return ' '.join(map(str.lower, words))
 
+def getEmbeddings(data):
     response = requests.post('http://localhost:5000/getEmbeddings', json = {'data':data})
 
     if response.status_code == 200:
@@ -41,6 +44,8 @@ def proccessHeaders(headers):
     headers = ' '.join(headers)
     headers = headers.lower()
     headers = headers.replace('&nbsp;',' ')
+    headers = convert(headers)
+    headers = headers.replace('_',' ')
     # The maximum token length admitted by is 256
     max_sequence_length = 256
     # Larger texts are cut into 256 token length pieces and their vectors are averaged
