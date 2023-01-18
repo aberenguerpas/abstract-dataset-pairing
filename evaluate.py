@@ -69,9 +69,7 @@ def getSimilarity(a, t1, t2, id):
             sim = cos(torch.from_numpy(a), torch.from_numpy(t1))*alpha + cos(torch.from_numpy(a), torch.from_numpy(t2))*(1-alpha)
             result.append(float(sim))
     except Exception as e:
-        print(e)
-        print(id)
-        print(a)
+       pass
     return result
 
 
@@ -82,7 +80,7 @@ def main():
     parser.add_argument('-m', '--model', default='stb', choices=['stb', 'rbt', 'brt','fst','w2v','blo', 'sci'],
                         help='Model to use: "sbt" (Sentence-BERT, Default), "rbt" (Roberta),"fst" (fastText), "w2v"(Word2Vec), "blo" (Bloomer), "sci" sci-bert '
                              ' "brt" (Bert)')
-    parser.add_argument('-r', '--result', default='./result', help='Name of the output folder that stores the similarity values calculated')
+    parser.add_argument('-r', '--result', default='./results', help='Name of the output folder that stores the similarity values calculated')
 
     args = parser.parse_args()
 
@@ -99,7 +97,6 @@ def main():
 
                     # Obtenemos el embedding del abstract 'a'
                     a = proccessText(data['desc'])
-
                     a = np.mean(getEmbeddings(a), axis=0)
                     
                     # Obtenemos el embedding de su dataset t t1(header) t2(content)
