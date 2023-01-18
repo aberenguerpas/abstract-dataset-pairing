@@ -46,6 +46,7 @@ def proccessHeaders(headers):
     headers = headers.replace('&nbsp;',' ')
     headers = convert(headers)
     headers = headers.replace('_',' ')
+    headers = headers.replace('-',' ')
     # The maximum token length admitted by is 256
     max_sequence_length = 256
     # Larger texts are cut into 256 token length pieces and their vectors are averaged
@@ -71,8 +72,6 @@ def getSimilarity(a, t1, t2, id):
         print(e)
         print(id)
         print(a)
- 
-
     return result
 
 
@@ -90,38 +89,43 @@ def main():
     files_path = args.input
     files = os.listdir(files_path)
 
+    ignored = 0
     similarities = []
     for file in tqdm(files):
         if file[-4:] == 'json':
-            with open(files_path+file, 'r') as f:
-                data = json.load(f)
+            try:
+                with open(files_path+file, 'r') as f:
+                    data = json.load(f)
 
-                # Obtenemos el embedding del abstract 'a'
-                a = proccessText(data['desc'])
+                    # Obtenemos el embedding del abstract 'a'
+                    a = proccessText(data['desc'])
 
-                a = np.mean(getEmbeddings(a), axis=0)
+                    a = np.mean(getEmbeddings(a), axis=0)
+                    
+                    # Obtenemos el embedding de su dataset t t1(header) t2(content)
+                    df = pd.read_csv(files_path+str(data['id'])+'.csv', encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None)
+                    t1 = proccessHeaders(df.columns.values)
+                    t1 = np.mean(getEmbeddings(t1), axis=0)
+                    
+                    t2 = []
+                    if len(df.index)>1000:
+                        df = df.sample(frac=0.1, replace=True, random_state=1)
+
+                    for col in df.columns:
+                        aux = proccessText(' '.join(df[col].astype(str).tolist()))
+                        emb = getEmbeddings(aux)
+                        if emb != []:
+                            aux = np.mean(emb, axis=0)
+                            t2.append(aux)
+                    
+                    t2 = np.mean(t2, axis=0)
+        
+                    similarities.append(getSimilarity(a, t1, t2, data['id']))
+            except Exception:
+                ignored+=1
+
                 
-                # Obtenemos el embedding de su dataset t t1(header) t2(content)
-                df = pd.read_csv(files_path+str(data['id'])+'.csv', encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None)
-                t1 = proccessHeaders(df.columns.values)
-                t1 = np.mean(getEmbeddings(t1), axis=0)
-                
-                t2 = []
-                if len(df.index)>1000:
-                    df = df.sample(frac=0.1, replace=True, random_state=1)
-
-                for col in df.columns:
-                    aux = proccessText(' '.join(df[col].astype(str).tolist()))
-                    emb = getEmbeddings(aux)
-                    if emb != []:
-                        aux = np.mean(emb, axis=0)
-                        t2.append(aux)
-                
-                t2 = np.mean(t2, axis=0)
-     
-
-                similarities.append(getSimilarity(a, t1, t2, data['id']))
-
+    print('Ignored:', ignored)
     # Create the pandas DataFrame
     df_final = pd.DataFrame(similarities, columns = ['0', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0'])
     
