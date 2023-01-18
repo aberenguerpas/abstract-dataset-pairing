@@ -5,6 +5,7 @@ import requests
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+import argparse
 
 def getEmbeddings(data):
 
@@ -72,7 +73,16 @@ def getSimilarity(a, t1, t2, id):
 
 def main():
 
-    files_path = './data/'
+    parser = argparse.ArgumentParser(description='Process WikiTables corpus')
+    parser.add_argument('-i', '--input', default='/raid/wake/data/', help='Name of the input folder storing CSV tables')
+    parser.add_argument('-m', '--model', default='brt', choices=['stb', 'rbt', 'brt','fst','w2v','blo', 'sci'],
+                        help='Model to use: "sbt" (Sentence-BERT, Default), "rbt" (Roberta),"fst" (fastText), "w2v"(Word2Vec), "blo" (Bloomer), "sci" sci-bert '
+                             ' "brt" (Bert)')
+    parser.add_argument('-r', '--result', default='./result', help='Name of the output folder that stores the similarity values calculated')
+
+    args = parser.parse_args()
+
+    files_path = args.input
     files = os.listdir(files_path)
 
     similarities = []
@@ -83,7 +93,7 @@ def main():
 
                 # Obtenemos el embedding del abstract 'a'
                 a = proccessText(data['desc'])
-          
+
                 a = np.mean(getEmbeddings(a), axis=0)
                 
                 # Obtenemos el embedding de su dataset t t1(header) t2(content)
@@ -115,7 +125,7 @@ def main():
     df_final = pd.DataFrame(similarities, columns = ['0', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0'])
     
     # print dataframe
-    df_final.to_csv('results.csv', index=False)
+    df_final.to_csv(os.path.join(args.result, args.model + '_alpha_similarity.csv'), index=False)
 
 if __name__ == "__main__":
     main()
