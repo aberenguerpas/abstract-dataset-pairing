@@ -34,7 +34,7 @@ async def getEmbeddings(request: Request):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Embeddings microservice')
-    parser.add_argument('-m', '--model', default='stb', choices=['stb','brt','rbt','fst','w2v', 'blo'],
+    parser.add_argument('-m', '--model', default='stb', choices=['stb','brt','rbt','fst','w2v', 'blo', 'sci'],
                         help='Model to use: "stb" (Sentence-Bert, by default), "brt" (bert-base-uncased),'
                              ' "rbt" (Roberta), "fst" (fastText), "w2v" (Word2Vec), "blo" (Bloom), "sci" (sci-bert)')
     args = parser.parse_args()

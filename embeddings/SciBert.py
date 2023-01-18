@@ -16,8 +16,6 @@ class SciBert:
                     return_tensors="pt"
             ).to(self.device)
 
-            print(tab)
-
             self.model = self.model.to(self.device)
             output = self.model(**tab)
             return [i[0] for i in output.last_hidden_state]
