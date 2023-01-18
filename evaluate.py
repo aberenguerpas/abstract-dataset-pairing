@@ -75,7 +75,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='Process WikiTables corpus')
     parser.add_argument('-i', '--input', default='/raid/wake/data/', help='Name of the input folder storing CSV tables')
-    parser.add_argument('-m', '--model', default='brt', choices=['stb', 'rbt', 'brt','fst','w2v','blo', 'sci'],
+    parser.add_argument('-m', '--model', default='stb', choices=['stb', 'rbt', 'brt','fst','w2v','blo', 'sci'],
                         help='Model to use: "sbt" (Sentence-BERT, Default), "rbt" (Roberta),"fst" (fastText), "w2v"(Word2Vec), "blo" (Bloomer), "sci" sci-bert '
                              ' "brt" (Bert)')
     parser.add_argument('-r', '--result', default='./result', help='Name of the output folder that stores the similarity values calculated')
@@ -102,13 +102,9 @@ def main():
                 t1 = np.mean(getEmbeddings(t1), axis=0)
                 
                 t2 = []
-                if len(df.columns)>1000:
-                    continue
-                if len(df.index)>100 and len(df.index)<10.000:
-                    df = df.sample(frac=0.05, replace=True, random_state=1)
-                if len(df.index)>=10000:
-                    df = df.sample(n=1000, replace=True, random_state=1)
-                
+                if len(df.index)>1000:
+                    df = df.sample(frac=0.1, replace=True, random_state=1)
+
                 for col in df.columns:
                     aux = proccessText(' '.join(df[col].astype(str).tolist()))
                     emb = getEmbeddings(aux)
