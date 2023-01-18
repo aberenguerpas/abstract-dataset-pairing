@@ -1,12 +1,12 @@
 # abstract-dataset-pairing
 
 
-# Corpus EDA
-N° tables 1187
-N° rows 339324849
+### Corpus EDA
+N° tables 1187 <br />
+N° rows 339324849 <br />
 N° cols 231828
-N° numeric cols 220425
-N° categorical cols 11403
+N° numeric cols 220425 <br />
+N° categorical cols 11403 <br />
 
 |       | n_words_abstract | n_rows   | n_cols   | numeric_cols | categorical_cols |
 |-------|------------------|----------|----------|--------------|------------------|
