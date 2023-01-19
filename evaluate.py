@@ -110,7 +110,14 @@ def main():
 
                     for col in df.columns:
                         aux = proccessText(' '.join(df[col].astype(str).tolist()))
-                        emb = getEmbeddings(aux)
+
+                        emb = []
+                        if len(aux) > 100: # Comprobamos si el tamaño de batc va a ser muy grande
+                            for i in range(0,len(aux),100):
+                                emb+= getEmbeddings(aux[i:i+100])
+                        else:
+                            emb = getEmbeddings(aux)
+                            
                         if emb != []:
                             aux = np.mean(emb, axis=0)
                             t2.append(aux)
