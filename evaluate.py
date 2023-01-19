@@ -118,7 +118,8 @@ def main():
                     t2 = np.mean(t2, axis=0)
         
                     similarities.append(getSimilarity(a, t1, t2, data['id']))
-            except Exception:
+            except Exception as e:
+                print(e)
                 ignored+=1
 
                 

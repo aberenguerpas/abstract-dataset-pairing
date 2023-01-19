@@ -22,3 +22,9 @@ def createIndex(dimensions):
 def saveInvertedIndex(d, path):
     pickled_file = open(path+'.pickle', 'wb')
     pickle.dump(d, pickled_file)
+
+def loadInversedIndex(path):
+    with open(path+'.pickle', 'rb') as handle:
+        b = pickle.load(handle)
+
+    return b

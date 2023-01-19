@@ -25,7 +25,7 @@ def proccessHeaders(headers):
     headers = headers.lower()
     headers = headers.replace('&nbsp;',' ')
     # The maximum token length admitted by is 256
-    max_sequence_length = 256
+    max_sequence_length = 128
     # Larger texts are cut into 256 token length pieces and their vectors are averaged
     # Take into account that a cell could have more than one token
     if len(headers.split()) > max_sequence_length:
@@ -44,7 +44,7 @@ def proccessText(text):
     text = text.lower()
 
     # The maximum token length admitted by is 256
-    max_sequence_length = 256
+    max_sequence_length = 50
     # Larger texts are cut into 256 token length pieces and their vectors are averaged
     # Take into account that a cell could have more than one token
     if len(text.split()) > max_sequence_length:
@@ -102,7 +102,7 @@ def main():
                     faiss.normalize_L2(a_vec)
 
                     # Headers
-                    df = pd.read_csv(files_path+str(data['id'])+'.csv', encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None)
+                    df = pd.read_csv(files_path+str(data['id'])+'.csv', encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
                     t1 = proccessHeaders(df.columns.values)
                     t1_vec = np.array(getEmbeddings(t1), dtype="float32")
                     if t1_vec.shape[0] > 1:
@@ -143,6 +143,7 @@ def main():
     saveIndex(index_abstract, os.path.join('faiss_data', args.model+'_abstract.faiss'))
     saveIndex(index_headers, os.path.join('faiss_data', args.model+'_headers.faiss'))
     saveIndex(index_content, os.path.join('faiss_data', args.model+'_content.faiss'))
+    saveInvertedIndex(invertedIndex, os.path.join('faiss_data', args.model+'_invertedIndex'))
 
     print('Ignored', ignored)
 

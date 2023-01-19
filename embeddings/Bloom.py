@@ -13,6 +13,7 @@ class Bloom:
         with torch.no_grad():
             tab = self.tokenizer(
                     data,
+                    padding=True,
                     return_tensors="pt"
             ).to(self.device)
 
