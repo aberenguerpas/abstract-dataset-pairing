@@ -128,8 +128,9 @@ def main():
                         if emb != []:
                             aux = np.mean(emb, axis=0)
                             t2.append(aux)
-                        print(t2)
+                     
                     t2 = np.mean(t2, axis=0)
+                    print(t2)
         
                     similarities.append(getSimilarity(a, t1, t2, data['id']))
             except Exception as e:
