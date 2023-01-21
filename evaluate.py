@@ -102,11 +102,13 @@ def main():
 
                     # Obtenemos el embedding del abstract 'a'
                     a = proccessText(data['desc'])
+                    print(a)
                     a = np.mean(getEmbeddings(a), axis=0)
                     
                     # Obtenemos el embedding de su dataset t t1(header) t2(content)
                     df = pd.read_csv(files_path+str(data['id'])+'.csv', encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None)
                     t1 = proccessHeaders(df.columns.values)
+                    print(t1)
                     t1 = np.mean(getEmbeddings(t1), axis=0)
                     
                     
@@ -130,17 +132,12 @@ def main():
                             t2.append(aux)
                      
                     t2 = np.mean(t2, axis=0)
-                    print(t2)
         
                     similarities.append(getSimilarity(a, t1, t2, data['id']))
             except Exception as e:
                 traceback.print_exc()
-                print(e)
-                print(a)
-                print(t1)
                 ignored+=1
 
-                
     print('Ignored:', ignored)
     # Create the pandas DataFrame
     df_final = pd.DataFrame(similarities, columns = ['0', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0'])
