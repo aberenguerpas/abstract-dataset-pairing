@@ -70,8 +70,8 @@ def getSimilarity(a, t1, t2, id):
             sim = cos(torch.from_numpy(a), torch.from_numpy(t1))*alpha + cos(torch.from_numpy(a), torch.from_numpy(t2))*(1-alpha)
             result.append(float(sim))
     except Exception:
-        print(a)
-        print(t1)
+        #print(a)
+        #print(t1)
         print(t2)
         traceback.print_exc()
         
@@ -109,9 +109,11 @@ def main():
                     t1 = proccessHeaders(df.columns.values)
                     t1 = np.mean(getEmbeddings(t1), axis=0)
                     
-                    t2 = []
+                    
                     if len(df.index)>1000:
                         df = df.sample(frac=0.1, replace=True, random_state=1)
+
+                    t2 = []
 
                     for col in df.columns:
                         aux = proccessText(' '.join(df[col].astype(str).tolist()))
@@ -126,7 +128,7 @@ def main():
                         if emb != []:
                             aux = np.mean(emb, axis=0)
                             t2.append(aux)
-                    
+                        print(t2)
                     t2 = np.mean(t2, axis=0)
         
                     similarities.append(getSimilarity(a, t1, t2, data['id']))
