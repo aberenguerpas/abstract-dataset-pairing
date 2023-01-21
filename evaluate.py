@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 import argparse
+import traceback
 
 def convert (camel_input):
     words = re.findall(r'[A-Z]?[a-z]+|[A-Z]{2,}(?=[A-Z][a-z]|\d|\W|$)|\d+', camel_input)
@@ -69,7 +70,7 @@ def getSimilarity(a, t1, t2, id):
             sim = cos(torch.from_numpy(a), torch.from_numpy(t1))*alpha + cos(torch.from_numpy(a), torch.from_numpy(t2))*(1-alpha)
             result.append(float(sim))
     except Exception as e:
-       pass
+        pass
     return result
 
 
@@ -126,6 +127,7 @@ def main():
         
                     similarities.append(getSimilarity(a, t1, t2, data['id']))
             except Exception as e:
+                traceback.print_exc()
                 print(e)
                 print(a)
                 print(t1)
