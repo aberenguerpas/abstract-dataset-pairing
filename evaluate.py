@@ -69,7 +69,8 @@ def getSimilarity(a, t1, t2, id):
         for alpha in np.arange(0, 1.1, 0.1).tolist():
             sim = cos(torch.from_numpy(a), torch.from_numpy(t1))*alpha + cos(torch.from_numpy(a), torch.from_numpy(t2))*(1-alpha)
             result.append(float(sim))
-    except Exception as e:
+    except Exception:
+        traceback.print_exc()
         pass
     return result
 
