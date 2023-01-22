@@ -70,9 +70,6 @@ def getSimilarity(a, t1, t2, id):
             sim = cos(torch.from_numpy(a), torch.from_numpy(t1))*alpha + cos(torch.from_numpy(a), torch.from_numpy(t2))*(1-alpha)
             result.append(float(sim))
     except Exception:
-        #print(a)
-        #print(t1)
-        print(t2)
         traceback.print_exc()
         
     return result
@@ -102,13 +99,11 @@ def main():
 
                     # Obtenemos el embedding del abstract 'a'
                     a = proccessText(data['desc'])
-                    print(a)
                     a = np.mean(getEmbeddings(a), axis=0)
                     
                     # Obtenemos el embedding de su dataset t t1(header) t2(content)
                     df = pd.read_csv(files_path+str(data['id'])+'.csv', encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None)
                     t1 = proccessHeaders(df.columns.values)
-                    print(t1)
                     t1 = np.mean(getEmbeddings(t1), axis=0)
                     
                     
