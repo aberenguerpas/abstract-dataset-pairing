@@ -4,6 +4,7 @@ import torch
 class Bloom:
 
     def __init__(self):
+        torch.cuda.empty_cache()
         self.model = AutoModel.from_pretrained("bigscience/bloom-560m", output_hidden_states = True)
         self.tokenizer = AutoTokenizer.from_pretrained("bigscience/bloom-560m")
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')

@@ -116,9 +116,9 @@ def main():
                         aux = proccessText(' '.join(df[col].astype(str).tolist()))
 
                         emb = []
-                        if len(aux) > 100: # Comprobamos si el tamaño de batc va a ser muy grande
-                            for i in range(0,len(aux),100):
-                                emb+= getEmbeddings(aux[i:i+100])
+                        if len(aux) > 64: # Comprobamos si el tamaño de batch va a ser muy grande
+                            for i in range(0,len(aux),64):
+                                emb+= getEmbeddings(aux[i:i+64])
                         else:
                             emb = getEmbeddings(aux)
 
