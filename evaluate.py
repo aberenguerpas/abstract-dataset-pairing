@@ -121,6 +121,7 @@ def main():
                             emb = getEmbeddings(aux)
 
                         if emb != []:
+
                             aux = np.mean(emb, axis=0)
                             t2.append(aux)
                      
@@ -128,6 +129,7 @@ def main():
         
                     similarities.append(getSimilarity(a, t1, t2, data['id']))
             except Exception as e:
+                print(emb)
                 traceback.print_exc()
                 ignored+=1
 
