@@ -18,7 +18,7 @@ def getEmbeddings(data):
     if response.status_code == 200:
         return response.json()['emb']
     elif response.status_code == 404:
-        print('Error getting embedding', response.status_cod )
+        print('Error getting embedding', response.status_cod)
 
 
 def proccessText(text):
@@ -30,11 +30,10 @@ def proccessText(text):
     max_sequence_length = 256
     # Larger texts are cut into 256 token length pieces and their vectors are averaged
     # Take into account that a cell could have more than one token
-    if len(text.split()) > max_sequence_length:
-        list_tokens = text.split()
+    if len(text) > max_sequence_length:
         list_texts = []
-        for i in range(0, len(text.split()), max_sequence_length):
-            list_texts.append(' '.join(list_tokens[i:i+max_sequence_length]))
+        for i in range(0, len(text), max_sequence_length):
+            list_texts.append(text[i:i+max_sequence_length])
         return list_texts
     else:
         return [text]
@@ -52,11 +51,10 @@ def proccessHeaders(headers):
     max_sequence_length = 256
     # Larger texts are cut into 256 token length pieces and their vectors are averaged
     # Take into account that a cell could have more than one token
-    if len(headers.split()) > max_sequence_length:
-        list_tokens = headers.split()
+    if len(headers) > max_sequence_length:
         list_texts = []
-        for i in range(0, len(list_tokens), max_sequence_length):
-            list_texts.append(' '.join(list_tokens[i:i+max_sequence_length]))
+        for i in range(0, len(headers), max_sequence_length):
+            list_texts.append(headers[i:i+max_sequence_length])
         return list_texts
     else:
         return [headers]
