@@ -20,8 +20,9 @@ N° categorical cols 11403 <br />
 | max   | 2001             | 76245109 | 50282    | 50281        | 1266             |
 
 ### Alpha variations results
-
-| alpha | SentenceBert |    bert    |  roberta  |    Bloom   |   w2v    |SciBert |   fst  |
+/alpha = 0 -> Only content
+/alpha = 1 -> Only headers
+| /alpha| SentenceBert |    bert    |  roberta  |    Bloom   |   w2v    |SciBert |   fst  |
 |-------|--------------|------------|-----------|------------|----------|--------|--------|
 |   0   |   0.140664   |  0.657940  | 0.203158  |            | 0.219585 |0.737520|0.533047|
 | 0.1   |   0.149022   |  0.661316  | 0.208560  | 185.699    | 0.237718 |0.734428|0.549144|
