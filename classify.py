@@ -82,7 +82,7 @@ def getScore(id, results_h, results_c):
     else:
         score_c = 0
 
-    alpha = 1
+    alpha = 0.8
 
     score = score_h*alpha + score_c*(1-alpha)
 
@@ -139,7 +139,6 @@ def main():
 
             except Exception as e:
                 print(e)
-                #print(abstract)
                 print(vec_abstract)
                 traceback.print_exc()
 
