@@ -4,7 +4,7 @@
 ### Corpus EDA
 N° tables 1187 <br />
 N° rows 339324849 <br />
-N° cols 231828
+N° cols 231828 <br />
 N° numeric cols 220425 <br />
 N° categorical cols 11403 <br />
 
@@ -20,7 +20,7 @@ N° categorical cols 11403 <br />
 | max   | 2001             | 76245109 | 50282    | 50281        | 1266             |
 
 ### Alpha variations results
-$\alpha$ = 0 -> Only content
+$\alpha$ = 0 -> Only content <br />
 $\alpha$ = 1 -> Only headers
 |$\alpha$| SentenceBert |    bert    |  roberta  |    Bloom   |   w2v    |SciBert |   fst  |
 |--------|--------------|------------|-----------|------------|----------|--------|--------|
