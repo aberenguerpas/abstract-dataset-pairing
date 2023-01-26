@@ -79,7 +79,7 @@ def main():
         size_vector = 300
 
 
-    index_abstract = createIndex(size_vector)
+    #index_abstract = createIndex(size_vector)
     index_headers = createIndex(size_vector)
     index_content = createIndex(size_vector)
 
@@ -92,12 +92,11 @@ def main():
                     data = json.load(f)
                     key = file.split('.')[0]
                     # Obtenemos el embedding del abstract 'a'
-                    a = proccessText(data['desc'])
-                    a_vec = np.array(getEmbeddings(a), dtype="float32")
-                    if a_vec.shape[0] > 1:
-                        a_vec =  np.array([np.mean(a_vec, axis=0)], dtype="float32")
-
-                    faiss.normalize_L2(a_vec)
+                    #a = proccessText(data['desc'])
+                    #a_vec = np.array(getEmbeddings(a), dtype="float32")
+                    #if a_vec.shape[0] > 1:
+                    #    a_vec =  np.array([np.mean(a_vec, axis=0)], dtype="float32")
+                    #faiss.normalize_L2(a_vec)
 
                     # Headers
                     df = pd.read_csv(files_path+str(data['id'])+'.csv', encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
@@ -128,7 +127,7 @@ def main():
 
                     id = np.random.randint(0, 99999999999999, size=1)
                 
-                    index_abstract.add_with_ids(a_vec, id)
+                    #index_abstract.add_with_ids(a_vec, id)
                     index_headers.add_with_ids(t1_vec, id)
                     index_content.add_with_ids(t2_vec, id)
 
@@ -138,7 +137,7 @@ def main():
                 ignored+=1
                 continue
         
-    saveIndex(index_abstract, os.path.join('faiss_data', args.model+'_abstract.faiss'))
+    #saveIndex(index_abstract, os.path.join('faiss_data', args.model+'_abstract.faiss'))
     saveIndex(index_headers, os.path.join('faiss_data', args.model+'_headers.faiss'))
     saveIndex(index_content, os.path.join('faiss_data', args.model+'_content.faiss'))
     saveInvertedIndex(invertedIndex, os.path.join('faiss_data', args.model+'_invertedIndex'))

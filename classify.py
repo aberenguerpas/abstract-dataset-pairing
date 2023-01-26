@@ -34,7 +34,7 @@ def proccessText(text):
         return [text]
 
 
-def search(vec_abstract, index_h, index_c, inverted):
+def search(vec_abstract, index_h, index_c, inverted, alpha):
 
     k = 2000 # n results
 
@@ -58,7 +58,7 @@ def search(vec_abstract, index_h, index_c, inverted):
     ranking = dict()
 
     for id in ids_list:
-        ranking[id]= getScore(id, results_h, results_c)
+        ranking[id]= getScore(id, results_h, results_c, alpha)
         
     # Ordenar ranking
     ranking_sort = sorted(ranking.items(), key=lambda x: x[1], reverse=True)
@@ -66,7 +66,7 @@ def search(vec_abstract, index_h, index_c, inverted):
     return list(map(lambda x: x[0], ranking_sort[:10])) # Nos quedamos con el top 5
     #return ranking_sort[:5]
 
-def getScore(id, results_h, results_c):
+def getScore(id, results_h, results_c, alpha):
 
     #Filter only results from an id
     score_c = list(filter(lambda d: d[0]==id, results_c))
@@ -81,8 +81,6 @@ def getScore(id, results_h, results_c):
         score_c = score_c[0][1]
     else:
         score_c = 0
-
-    alpha = 0.8
 
     score = score_h*alpha + score_c*(1-alpha)
 
@@ -116,7 +114,10 @@ def main():
     inverted = loadInversedIndex(os.path.join(args.indexdir, args.model+'_invertedIndex'))
 
     # Counters
-    mmr = []
+    mmr = dict()
+    for alpha in np.arange(0, 1.1, 0.1):
+        mmr[alpha] = []
+    
     # Read abstracts
     for file in tqdm(os.listdir(args.input)):
 
@@ -130,12 +131,11 @@ def main():
                     vec_abstract = np.array(getEmbeddings(abstract)).astype(np.float32)
 
                     # Search
-                    rank = search(vec_abstract, index_headers, index_content, inverted)
-                    
-                    # Check in results are correct
-                    points = checkPos(file[:-5], rank)        
-                    mmr.append(points)
-
+                    for alpha in np.arange(0, 1.1, 0.1):
+                        rank = search(vec_abstract, index_headers, index_content, inverted, alpha)
+                        # Check in results are correct
+                        points = checkPos(file[:-5], rank)        
+                        mmr[alpha].append(points)
 
             except Exception as e:
                 print(e)
@@ -144,8 +144,9 @@ def main():
 
         # save result
         #save_result(id, rank, args.result+'_'+args.model+'.csv')
-
-    print('MMR-10:', round(np.mean(mmr),2))
+    for alpha in np.arange(0, 1.1, 0.1):
+            print(round(alpha,1), 'MMR:', round(np.mean(mmr[alpha]),2))
+   
     print('Search time: ' + str(round(time.time() - start_time, 2)) + ' seconds')
 
 
