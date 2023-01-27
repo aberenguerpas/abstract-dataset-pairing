@@ -36,19 +36,19 @@ def proccessText(text):
 
 def search(vec_abstract, index_h, index_c, inverted, alpha):
 
-    k = 2000 # n results
+    k = 1000 # n results
 
     ids_list = []
 
     faiss.normalize_L2(vec_abstract)
 
     # Headers search
-    distances_h, indices_h = index_h.search(vec_abstract, 20)
+    distances_h, indices_h = index_h.search(vec_abstract, k)
     results_h = [(inverted[r], distances_h[0][i]) for i, r in enumerate(indices_h[0])]
     ids_list += [k for k,_ in results_h]
 
     # Content search
-    distances_c, indices_c = index_c.search(vec_abstract, 20)
+    distances_c, indices_c = index_c.search(vec_abstract, k)
     results_c = [(inverted[r], distances_c[0][i]) for i, r in enumerate(indices_c[0])]
     ids_list += [k for k,_ in results_c]
 
@@ -63,7 +63,7 @@ def search(vec_abstract, index_h, index_c, inverted, alpha):
     # Ordenar ranking
     ranking_sort = sorted(ranking.items(), key=lambda x: x[1], reverse=True)
    
-    return list(map(lambda x: x[0], ranking_sort[:10])) # Nos quedamos con el top 5
+    return list(map(lambda x: x[0], ranking_sort[:10])) # Nos quedamos con el top 10
     #return ranking_sort[:5]
 
 def getScore(id, results_h, results_c, alpha):
@@ -139,7 +139,6 @@ def main():
 
             except Exception as e:
                 print(e)
-                print(vec_abstract)
                 traceback.print_exc()
 
         # save result
