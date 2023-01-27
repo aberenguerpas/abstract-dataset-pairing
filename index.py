@@ -128,14 +128,13 @@ def main():
                     id = np.random.randint(0, 99999999999999, size=1)
                 
                     #index_abstract.add_with_ids(a_vec, id)
+                    invertedIndex[id[0]] = key
                     index_headers.add_with_ids(t1_vec, id)
                     index_content.add_with_ids(t2_vec, id)
 
-                    invertedIndex[id[0]] = key
             except Exception as e:
                 traceback.print_exc()
                 ignored+=1
-                continue
         
     #saveIndex(index_abstract, os.path.join('faiss_data', args.model+'_abstract.faiss'))
     saveIndex(index_headers, os.path.join('faiss_data', args.model+'_headers.faiss'))
