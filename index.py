@@ -114,10 +114,10 @@ def main():
                     for col in df.columns:
                         aux = proccessText(' '.join(df[col].astype(str).tolist()))
                         
-                        emb = []
+                        emb = np.array([])
                         if len(aux)>300:
                             for a in range(0,len(aux),300):
-                                emb += np.array(getEmbeddings(aux[a:a+300]), dtype="float32")
+                                emb += np.append(emb, np.array(getEmbeddings(aux[a:a+300]), dtype="float32"), axis=0)
                         else:
                             emb = np.array(getEmbeddings(aux), dtype="float32")
                       
