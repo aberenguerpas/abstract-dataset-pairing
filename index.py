@@ -11,7 +11,6 @@ import argparse
 
 def getEmbeddings(data):
     response = requests.post('http://localhost:5000/getEmbeddings', json = {'data':data})
-
     if response.status_code == 200:
         return response.json()['emb']
     elif response.status_code == 404:
@@ -43,7 +42,7 @@ def proccessText(text):
     text = text.lower()
 
     # The maximum token length admitted by is 256
-    max_sequence_length = 50
+    max_sequence_length = 128
     # Larger texts are cut into 256 token length pieces and their vectors are averaged
     # Take into account that a cell could have more than one token
     if len(text) > max_sequence_length:
@@ -133,8 +132,8 @@ def main():
 
             except Exception as e:
                 traceback.print_exc()
-                print(t1)
-                print(t2)
+                #print(t1)
+                #print(t2)
                 ignored+=1
 
     saveIndex(index_headers, os.path.join('faiss_data', args.model+'_headers.faiss'))
