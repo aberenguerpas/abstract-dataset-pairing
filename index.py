@@ -24,7 +24,7 @@ def proccessHeaders(headers):
     headers = headers.lower()
     headers = headers.replace('&nbsp;',' ')
     # The maximum token length admitted by is 256
-    max_sequence_length = 256
+    max_sequence_length = 128
     # Larger texts are cut into 256 token length pieces and their vectors are averaged
     # Take into account that a cell could have more than one token
     if len(headers) > max_sequence_length:
