@@ -67,6 +67,8 @@ def main():
 
     files = os.listdir(files_path)
 
+    files = [i for i in files if i.endswith(".json")]
+
     invertedIndex = dict()
     if args.model == 'sci' or args.model == 'brt':
         size_vector = 768

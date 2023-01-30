@@ -125,7 +125,6 @@ def main():
                 with open(os.path.join(args.input,file), 'r') as f:
                     data = json.load(f)
                    
-
                     if len(data['desc'].replace('&nbsp;',' ').split(" "))>140:
                         abstract = proccessText(data['desc'])
                         # Create embedding abstract
