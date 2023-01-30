@@ -117,7 +117,9 @@ def main():
         mmr[alpha] = []
     
     # Read abstracts
-    for file in tqdm(os.listdir(args.input)):
+    files = os.listdir(args.input)
+    files = [i for i in files if i.endswith(".json")]
+    for file in tqdm():
 
         #load table
         if file[-4:] == 'json':

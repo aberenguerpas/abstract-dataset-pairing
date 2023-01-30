@@ -92,12 +92,6 @@ def main():
                 with open(files_path+file, 'r') as f:
                     data = json.load(f)
                     key = file.split('.')[0]
-                    # Obtenemos el embedding del abstract 'a'
-                    #a = proccessText(data['desc'])
-                    #a_vec = np.array(getEmbeddings(a), dtype="float32")
-                    #if a_vec.shape[0] > 1:
-                    #    a_vec =  np.array([np.mean(a_vec, axis=0)], dtype="float32")
-                    #faiss.normalize_L2(a_vec)
 
                     # Headers
                     df = pd.read_csv(files_path+str(data['id'])+'.csv', encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
