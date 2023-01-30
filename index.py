@@ -114,9 +114,9 @@ def main():
                     for col in df.columns:
                         aux = proccessText(' '.join(df[col].astype(str).tolist()))
                         
-                        emb = np.array([])
-                        if len(aux)>300:
-                            for a in range(0,len(aux),300):
+                        emb = np.array([[]])
+                        if len(aux) > 300:
+                            for a in range(0, len(aux), 300):
                                 emb = np.append(emb, getEmbeddings(aux[a:a+300]), axis=0)
                         else:
                             emb = getEmbeddings(aux)
