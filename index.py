@@ -24,7 +24,7 @@ def proccessHeaders(headers):
     headers = headers.lower()
     headers = headers.replace('&nbsp;',' ')
     # The maximum token length admitted by is 256
-    max_sequence_length = 64
+    max_sequence_length = 128
     # Larger texts are cut into 256 token length pieces and their vectors are averaged
     # Take into account that a cell could have more than one token
     if len(headers) > max_sequence_length:
@@ -42,7 +42,7 @@ def proccessText(text):
     text = text.lower()
 
     # The maximum token length admitted by is 256
-    max_sequence_length = 64
+    max_sequence_length = 128
     # Larger texts are cut into 256 token length pieces and their vectors are averaged
     # Take into account that a cell could have more than one token
     if len(text) > max_sequence_length:
@@ -100,7 +100,7 @@ def main():
                     # Headers
                     df = pd.read_csv(files_path+str(data['id'])+'.csv', encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
                     t1 = proccessHeaders(df.columns.values)
-                    t1_vec = np.array(getEmbeddings(t1), dtype="float32")
+                    t1_vec = np.array(getEmbeddings(t1))
                     if t1_vec.shape[0] > 1:
                         t1_vec = np.array([np.mean(t1_vec, axis=0)], dtype="float32")
 
@@ -113,7 +113,10 @@ def main():
                     
                     for col in df.columns:
                         aux = proccessText(' '.join(df[col].astype(str).tolist()))
-                        emb = np.array(getEmbeddings(aux), dtype="float32")
+                        print(len(aux))
+                        #if len(aux)
+                        #for au
+                        emb = np.array(getEmbeddings(aux))
                       
                         if np.any(emb):
                             if emb.shape[0] > 1:
