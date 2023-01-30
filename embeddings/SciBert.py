@@ -2,7 +2,6 @@ from transformers import AutoTokenizer, AutoModel
 import torch
 
 class SciBert:
-
     def __init__(self):
         self.model = AutoModel.from_pretrained("allenai/scibert_scivocab_uncased", output_hidden_states = True)
         self.tokenizer = AutoTokenizer.from_pretrained("allenai/scibert_scivocab_uncased")
@@ -10,6 +9,7 @@ class SciBert:
         self.dimensions = 768
 
     def getEmbedding(self, data):
+        torch.cuda.empty_cache()
         with torch.no_grad():
             tab = self.tokenizer(
                     data,

@@ -10,6 +10,7 @@ class Bert:
         self.dimensions = 768
 
     def getEmbedding(self, data):
+        torch.cuda.empty_cache()
         with torch.no_grad():
             tab = self.tokenizer(
                     data,
