@@ -115,6 +115,7 @@ def main():
                         aux = proccessText(' '.join(df[col].astype(str).tolist()))
                         
                         emb = ""
+                        # Split text - too big , memory problems
                         if len(aux) > 300:
                             for a in range(0, len(aux), 300):
                                 if a==0:

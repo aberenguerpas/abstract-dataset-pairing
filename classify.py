@@ -125,15 +125,17 @@ def main():
                 with open(os.path.join(args.input,file), 'r') as f:
                     data = json.load(f)
                     abstract = proccessText(data['desc'])
-                    # Create embedding abstract
-                    vec_abstract = np.array(getEmbeddings(abstract)).astype(np.float32)
 
-                    # Search
-                    for alpha in np.arange(0, 1.1, 0.1):
-                        rank = search(vec_abstract, index_headers, index_content, inverted, alpha)
-                        # Check in results are correct
-                        points = checkPos(file[:-5], rank)        
-                        mmr[alpha].append(points)
+                    if len(abstract.split)>140:
+                        # Create embedding abstract
+                        vec_abstract = np.array(getEmbeddings(abstract)).astype(np.float32)
+
+                        # Search
+                        for alpha in np.arange(0, 1.1, 0.1):
+                            rank = search(vec_abstract, index_headers, index_content, inverted, alpha)
+                            # Check in results are correct
+                            points = checkPos(file[:-5], rank)        
+                            mmr[alpha].append(points)
 
             except Exception as e:
                 print(e)
