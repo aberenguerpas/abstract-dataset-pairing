@@ -119,7 +119,7 @@ def main():
     # Read abstracts
     files = os.listdir(args.input)
     files = [i for i in files if i.endswith(".json")]
-    for file in tqdm():
+    for file in tqdm(files):
 
         #load table
         if file[-4:] == 'json':
