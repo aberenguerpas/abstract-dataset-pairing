@@ -100,7 +100,7 @@ def main():
                     # Headers
                     df = pd.read_csv(files_path+str(data['id'])+'.csv', encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
                     t1 = proccessHeaders(df.columns.values)
-                    t1_vec = np.array(getEmbeddings(t1))
+                    t1_vec = np.array(getEmbeddings(t1), dtype="float32")
                     if t1_vec.shape[0] > 1:
                         t1_vec = np.array([np.mean(t1_vec, axis=0)], dtype="float32")
 
@@ -116,7 +116,7 @@ def main():
                         print(len(aux))
                         #if len(aux)
                         #for au
-                        emb = np.array(getEmbeddings(aux))
+                        emb = np.array(getEmbeddings(aux), dtype="float32")
                       
                         if np.any(emb):
                             if emb.shape[0] > 1:
