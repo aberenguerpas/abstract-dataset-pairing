@@ -115,9 +115,9 @@ def main():
                         aux = proccessText(' '.join(df[col].astype(str).tolist()))
                         
                         emb = []
-                        if len(aux)>4000:
-                            for a in range(0,len(aux),4000):
-                                emb += np.array(getEmbeddings(aux[a:a+4000]), dtype="float32")
+                        if len(aux)>300:
+                            for a in range(0,len(aux),300):
+                                emb += np.array(getEmbeddings(aux[a:a+300]), dtype="float32")
                         else:
                             emb = np.array(getEmbeddings(aux), dtype="float32")
                       
