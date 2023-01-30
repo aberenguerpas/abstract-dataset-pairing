@@ -124,9 +124,10 @@ def main():
             try:
                 with open(os.path.join(args.input,file), 'r') as f:
                     data = json.load(f)
-                    abstract = proccessText(data['desc'])
+                   
 
-                    if len(abstract.split(" "))>140:
+                    if len(data['desc'].replace('&nbsp;',' ').split(" "))>140:
+                        abstract = proccessText(data['desc'])
                         # Create embedding abstract
                         vec_abstract = np.array(getEmbeddings(abstract)).astype(np.float32)
 
