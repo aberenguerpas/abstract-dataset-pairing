@@ -113,10 +113,13 @@ def main():
                     
                     for col in df.columns:
                         aux = proccessText(' '.join(df[col].astype(str).tolist()))
-                        print(len(aux))
-                        #if len(aux)
-                        #for au
-                        emb = np.array(getEmbeddings(aux), dtype="float32")
+                        
+                        emb = []
+                        if len(aux)>4000:
+                            for a in range(0,len(aux),4000):
+                                emb += np.array(getEmbeddings(aux[a:a+4000]), dtype="float32")
+                        else:
+                            emb = np.array(getEmbeddings(aux), dtype="float32")
                       
                         if np.any(emb):
                             if emb.shape[0] > 1:
