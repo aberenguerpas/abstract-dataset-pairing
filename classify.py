@@ -126,7 +126,7 @@ def main():
                     data = json.load(f)
                     abstract = proccessText(data['desc'])
 
-                    if len(abstract.split)>140:
+                    if len(abstract.split(" "))>140:
                         # Create embedding abstract
                         vec_abstract = np.array(getEmbeddings(abstract)).astype(np.float32)
 
