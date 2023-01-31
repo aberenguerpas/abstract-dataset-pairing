@@ -5,15 +5,15 @@ from tqdm import tqdm
 import requests
 import faiss
 import numpy as np
-import traceback
+import logging
 
 def getEmbeddings(data):
     response = requests.post('http://localhost:5000/getEmbeddings', json = {'data':data})
 
     if response.status_code == 200:
         return response.json()['emb']
-    elif response.status_code == 404:
-        print('Error getting embedding', response.status_cod)
+    else:
+        logger.warning(msg="Problem getting embeddings" + response.status_cod)
 
 
 def proccessText(text):
@@ -93,6 +93,7 @@ def checkPos(id,lis):
     return 0
 
 def main():
+
     start_time = time.time()
 
     parser = argparse.ArgumentParser(description='Classify abstracts')
@@ -119,39 +120,57 @@ def main():
     # Read abstracts
     files = os.listdir(args.input)
     files = [i for i in files if i.endswith(".json")]
+    files.sort()
+    logger.info("Classifying  " + str(len(files))+ " files...")
     for file in tqdm(files):
+        try:
+            with open(os.path.join(args.input,file), 'r') as f:
+                data = json.load(f)
+                
+                abstract = proccessText(data['desc'])
+                # Create embedding abstract
+                vec_abstract = np.array(getEmbeddings(abstract)).astype(np.float32)
 
-        #load table
-        if file[-4:] == 'json':
-            try:
-                with open(os.path.join(args.input,file), 'r') as f:
-                    data = json.load(f)
-                   
-                    abstract = proccessText(data['desc'])
-                    # Create embedding abstract
-                    vec_abstract = np.array(getEmbeddings(abstract)).astype(np.float32)
+                # Search
+                for alpha in np.arange(0, 1.1, 0.1):
+                    rank = search(vec_abstract, index_headers, index_content, inverted, alpha)
+                    # Check in results are correct
+                    points = checkPos(file[:-5], rank)        
+                    mmr[alpha].append(points)
 
-                    # Search
-                    for alpha in np.arange(0, 1.1, 0.1):
-                        rank = search(vec_abstract, index_headers, index_content, inverted, alpha)
-                        # Check in results are correct
-                        points = checkPos(file[:-5], rank)        
-                        mmr[alpha].append(points)
-
-            except Exception as e:
-                print(e)
-                traceback.print_exc()
+        except Exception as e:
+            logger.error("Exception occurred", exc_info=True)
+            #traceback.print_exc()
 
     # Create a file with the results
     results = ["Results model "+args.model+"\n"]
+    logger.info("Saving info from model "+args.model)
 
     for alpha in np.arange(0, 1.1, 0.1):
-        results.append('alpha ' + str(round(alpha,1))+ ' MMR: '+ str(round(np.mean(mmr[alpha]),2)) + "\n")
-   
-    print('Search time: ' + str(round(time.time() - start_time, 2)) + ' seconds')
+        text = 'alpha ' + str(round(alpha,1))+ ' MMR: '+ str(round(np.mean(mmr[alpha]),2))
+        logger.info(text)
+        results.append(text + "\n")
+
+    
+
+    logger.info('Search time '+ args.model+ ': ' + str(round(time.time() - start_time, 2)) + ' seconds')
 
     f = open(args.clasification+args.model+".txt", "w")
     f.writelines(results)
     f.close()
+
+
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(name='classifier_logger')
+
+    logFileFormatter = logging.Formatter(
+        fmt=f"%(levelname)s %(asctime)s (%(relativeCreated)d) \t %(pathname)s Function %(funcName)s Line %(lineno)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    fileHandler = logging.FileHandler(filename='execute.log')
+    fileHandler.setFormatter(logFileFormatter)
+    fileHandler.setLevel(level=logging.INFO)
+    logger.addHandler(fileHandler)
+    
     main()

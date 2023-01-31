@@ -5,7 +5,7 @@ from tqdm import tqdm
 import requests
 from utils import *
 import pandas as pd
-import traceback
+import time
 import argparse
 import logging
 
@@ -13,8 +13,8 @@ def getEmbeddings(data):
     response = requests.post('http://localhost:5000/getEmbeddings', json = {'data':data})
     if response.status_code == 200:
         return response.json()['emb']
-    elif response.status_code == 404:
-        print('Error getting embedding', response.status_cod)
+    else:
+        logger.warning(msg="Problem getting embeddings" + response.status_cod)
 
 
 def proccessHeaders(headers):
@@ -54,6 +54,8 @@ def proccessText(text):
         return [text]
 
 def main():
+    start_time = time.time()
+
     parser = argparse.ArgumentParser(description='Process WikiTables corpus')
     parser.add_argument('-i', '--input', default='/raid/wake/data/', help='Name of the input folder storing CSV tables')
     parser.add_argument('-m', '--model', default='stb', choices=['stb', 'rbt', 'brt','fst','w2v','blo', 'sci'],
@@ -87,9 +89,6 @@ def main():
 
     for file in tqdm(files):
         try:
-            print(file)
-            if file[0]=="'":
-                print('fuck')
             key = file[:7]
             # Headers
             df = pd.read_csv(files_path+file , encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
@@ -137,14 +136,28 @@ def main():
             index_content.add_with_ids(t2_vec, id)
 
         except Exception as e:
-            traceback.print_exc()
+            logger.error("Exception occurred "+ e, exc_info=True)
+            logger.error("Problem with file "+ file)
             ignored += 1
 
+    logger.info("Saving indexes "+ args.model + "...")
     saveIndex(index_headers, os.path.join('faiss_data', args.model+'_headers.faiss'))
     saveIndex(index_content, os.path.join('faiss_data', args.model+'_content.faiss'))
     saveInvertedIndex(invertedIndex, os.path.join('faiss_data', args.model+'_invertedIndex'))
 
-    print('Ignored', ignored)
+    logger.info("Files ignored "+str(ignored))
+    logger.info('Indexation time '+ args.model+ ': ' + str(round((time.time() - start_time)/60, 2)) + ' minutes')
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(name='index_logger')
+
+    logFileFormatter = logging.Formatter(
+        fmt=f"%(levelname)s %(asctime)s (%(relativeCreated)d) \t %(pathname)s Function %(funcName)s Line %(lineno)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    fileHandler = logging.FileHandler(filename='execute.log')
+    fileHandler.setFormatter(logFileFormatter)
+    fileHandler.setLevel(level=logging.INFO)
+    logger.addHandler(fileHandler)
     main()
