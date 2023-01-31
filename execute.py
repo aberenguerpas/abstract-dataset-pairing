@@ -18,25 +18,13 @@ def checkCall():
 
 def classify(m):
     print("Obteniendo clasificacion con modelo:", m)
-    with subprocess.Popen(['./env/bin/python', 'classify.py', '-m', m, '-i','data/'], 
-                            stdout=subprocess.PIPE,
-                            text=True,
-                            stderr=subprocess.STDOUT) as proc:
-        while True:
-            output = proc.stdout.readline()
-            if proc.poll() is not None:
-                break
-            if output:
-                print(output)
+    with subprocess.Popen(['./env/bin/python', 'classify.py', '-m', m, '-i','data/']) as proc:
+        proc.communicate()
 
 def index(m):
     print("Indexando con modelo:", m)
     with subprocess.Popen(['./env/bin/python', 'index.py', '-m', m, '-i','data/']) as proc:
         proc.communicate()
-        #    output = proc.stdout.readline()
-        #        break
-        #     if output:
-        #        print(output.strip())
 
 def main():
     try:
