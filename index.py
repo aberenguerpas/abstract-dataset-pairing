@@ -67,7 +67,8 @@ def main():
 
     files = os.listdir(files_path)
 
-    files = [i for i in files if i.endswith(".csv")].sort()
+    files = [i for i in files if i.endswith(".csv")]
+    files.sort()
 
     invertedIndex = dict()
     if args.model == 'sci' or args.model == 'brt':
