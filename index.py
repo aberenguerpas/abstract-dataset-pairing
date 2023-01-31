@@ -1,4 +1,4 @@
-import os, json, sys
+import os
 import faiss
 import numpy as np
 from tqdm import tqdm
@@ -7,7 +7,7 @@ from utils import *
 import pandas as pd
 import traceback
 import argparse
-
+import logging
 
 def getEmbeddings(data):
     response = requests.post('http://localhost:5000/getEmbeddings', json = {'data':data})
@@ -86,6 +86,8 @@ def main():
 
     for file in tqdm(files):
         try:
+            if file[0]=="'":
+                print('fuck')
             key = file[:7]
             # Headers
             df = pd.read_csv(files_path+file , encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
