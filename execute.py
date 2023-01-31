@@ -1,9 +1,6 @@
-import sys
 import subprocess
-import time
 import requests
 
-models = ['stb', 'brt', 'rbt', 'fst', 'w2v', 'sci', 'blo']
 
 
 def checkCall():
@@ -27,6 +24,8 @@ def index(m):
         proc.communicate()
 
 def main():
+    models = ['stb', 'brt', 'rbt', 'fst', 'w2v', 'sci', 'blo']
+
     try:
         for m in models:
             with subprocess.Popen(['./env/bin/python', 'embeddings/main.py', '-m', m]) as proc:

@@ -143,14 +143,16 @@ def main():
                 print(e)
                 traceback.print_exc()
 
-        # save result
-        #save_result(id, rank, args.result+'_'+args.model+'.csv')
+    # Create a file with the results
+    results = ["Results model "+args.model+"\n"]
+
     for alpha in np.arange(0, 1.1, 0.1):
-            print(round(alpha,1), 'MMR:', round(np.mean(mmr[alpha]),2))
+        results.append('alpha ' + str(round(alpha,1))+ ' MMR: '+ str(round(np.mean(mmr[alpha]),2)) + "\n")
    
     print('Search time: ' + str(round(time.time() - start_time, 2)) + ' seconds')
 
-
-
+    f = open(args.clasification+args.model+".txt", "w")
+    f.writelines(results)
+    f.close()
 if __name__ == "__main__":
     main()
