@@ -15,7 +15,7 @@ import time
 
 def download(file_name, url):
   r = requests.get(url, allow_redirects=True)
-  open('/raid/wake/data/'+file_name+'.csv', 'wb').write(r.content)
+  open('/raid/wake/data/'+file_name, 'wb').write(r.content)
 
 page = 1
 obtained = 0
