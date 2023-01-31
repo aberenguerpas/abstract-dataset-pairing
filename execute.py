@@ -1,8 +1,6 @@
 import subprocess
 import requests
 
-
-
 def checkCall():
     try: 
         response = requests.post('http://localhost:5000/getEmbeddings', json = {'data':'a'})
@@ -14,13 +12,13 @@ def checkCall():
         return False
 
 def classify(m):
-    print("Obteniendo clasificacion con modelo:", m)
-    with subprocess.Popen(['./env/bin/python', 'classify.py', '-m', m, '-i','data/']) as proc:
+    print("Getting classification with:", m)
+    with subprocess.Popen(['./env/bin/python', 'classify.py', '-m', m, '-i','/raid/wake/data/']) as proc:
         proc.communicate()
 
 def index(m):
-    print("Indexando con modelo:", m)
-    with subprocess.Popen(['./env/bin/python', 'index.py', '-m', m, '-i','data/']) as proc:
+    print("Indexing with:", m)
+    with subprocess.Popen(['./env/bin/python', 'index.py', '-m', m, '-i','/raid/wake/data/']) as proc:
         proc.communicate()
 
 def main():
@@ -36,7 +34,7 @@ def main():
                         proc.kill()
 
     except subprocess.CalledProcessError as err:
-        print("error occurred when running pgrep : {}".format(err))
+        print("Error occurred when running pgrep : {}".format(err))
 
 
 if __name__ == "__main__":
