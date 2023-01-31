@@ -28,7 +28,7 @@ while obtained < total:
 
       desc = re.sub('<[^<]+?>', '', r.json()['metadata']['description'])
 
-      if desc.split(" ")>100:
+      if len(desc.split(" ")) > 100:
         doc['id'] = d['id']
         doc['desc'] = desc
         doc['files'] = []
