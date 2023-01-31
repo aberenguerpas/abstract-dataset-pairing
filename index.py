@@ -67,7 +67,7 @@ def main():
 
     files = os.listdir(files_path)
 
-    files = [i for i in files if i.endswith(".json")]
+    files = [i for i in files if i.endswith(".csv")]
 
     invertedIndex = dict()
     if args.model == 'sci' or args.model == 'brt':
@@ -85,62 +85,56 @@ def main():
     ignored = 0
 
     for file in tqdm(files):
-        if file[-4:] == 'json':
-            try:
-                with open(files_path+file, 'r') as f:
-                    data = json.load(f)
-                    key = file.split('.')[0]
+        try:
+            key = file[:7]
+            # Headers
+            df = pd.read_csv(files_path+file , encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
+            t1 = proccessHeaders(df.columns.values)
+            t1_vec = np.array(getEmbeddings(t1), dtype="float32")
+            if t1_vec.shape[0] > 1:
+                t1_vec = np.array([np.mean(t1_vec, axis=0)], dtype="float32")
 
-                    # Check if we are indexing abstract
-                    if len(data['desc'].replace('&nbsp;',' ').split(" "))>140:
-                        # Headers
-                        df = pd.read_csv(files_path+str(data['id'])+'.csv', encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
-                        t1 = proccessHeaders(df.columns.values)
-                        t1_vec = np.array(getEmbeddings(t1), dtype="float32")
-                        if t1_vec.shape[0] > 1:
-                            t1_vec = np.array([np.mean(t1_vec, axis=0)], dtype="float32")
+            faiss.normalize_L2(t1_vec)
 
-                        faiss.normalize_L2(t1_vec)
+            # Content
+            t2 = []
+            if len(df.index)>1000:
+                df = df.sample(frac=0.1, replace=True, random_state=1)
+            
+            for col in df.columns:
+                aux = proccessText(' '.join(df[col].astype(str).tolist()))
+                
+                emb = ""
+                # Split text - too big , memory problems
+                if len(aux) > 300:
+                    for a in range(0, len(aux), 300):
+                        if a==0:
+                            emb = getEmbeddings(aux[a:a+300])
+                        else:
+                            emb = np.append(emb, getEmbeddings(aux[a:a+300]), axis=0)
+                else:
+                    emb = getEmbeddings(aux)
 
-                        # Content
-                        t2 = []
-                        if len(df.index)>1000:
-                            df = df.sample(frac=0.1, replace=True, random_state=1)
-                        
-                        for col in df.columns:
-                            aux = proccessText(' '.join(df[col].astype(str).tolist()))
-                            
-                            emb = ""
-                            # Split text - too big , memory problems
-                            if len(aux) > 300:
-                                for a in range(0, len(aux), 300):
-                                    if a==0:
-                                        emb = getEmbeddings(aux[a:a+300])
-                                    else:
-                                        emb = np.append(emb, getEmbeddings(aux[a:a+300]), axis=0)
-                            else:
-                                emb = getEmbeddings(aux)
+                emb = np.array(emb, dtype="float32")
+            
+                if np.any(emb):
+                    if emb.shape[0] > 1:
+                        emb =  np.array([np.mean(emb, axis=0)], dtype="float32")
+                
+                    faiss.normalize_L2(emb)
+                    t2.append(emb)
+            
+            t2_vec = np.array(np.mean(t2, axis=0))
 
-                            emb = np.array(emb, dtype="float32")
-                        
-                            if np.any(emb):
-                                if emb.shape[0] > 1:
-                                    emb =  np.array([np.mean(emb, axis=0)], dtype="float32")
-                            
-                                faiss.normalize_L2(emb)
-                                t2.append(emb)
-                        
-                        t2_vec = np.array(np.mean(t2, axis=0))
+            id = np.random.randint(0, 99999999999999, size=1)
+        
+            invertedIndex[id[0]] = key
+            index_headers.add_with_ids(t1_vec, id)
+            index_content.add_with_ids(t2_vec, id)
 
-                        id = np.random.randint(0, 99999999999999, size=1)
-                    
-                        invertedIndex[id[0]] = key
-                        index_headers.add_with_ids(t1_vec, id)
-                        index_content.add_with_ids(t2_vec, id)
-
-            except Exception as e:
-                traceback.print_exc()
-                ignored += 1
+        except Exception as e:
+            traceback.print_exc()
+            ignored += 1
 
     saveIndex(index_headers, os.path.join('faiss_data', args.model+'_headers.faiss'))
     saveIndex(index_content, os.path.join('faiss_data', args.model+'_content.faiss'))
