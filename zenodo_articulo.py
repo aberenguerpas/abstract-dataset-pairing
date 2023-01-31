@@ -43,12 +43,11 @@ while obtained<total:
       for file in r.json()['files']:
         if file['type']=='csv':
           file_name = file['key']
-          doc['files'].append(file_name)
+          doc['files'].append(doc['id']+file_name)
 
-          download(str(doc['id']), file['links']['self'])
+          download(str(doc['id']+file_name), file['links']['self'])
           with open('/raid/wake/data/'+str(doc['id'])+".json", "w") as outfile:
             json.dump(doc, outfile)
-          break
     except Exception:
       time.sleep(60)
 

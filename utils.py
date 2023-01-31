@@ -26,5 +26,4 @@ def saveInvertedIndex(d, path):
 def loadInversedIndex(path):
     with open(path+'.pickle', 'rb') as handle:
         b = pickle.load(handle)
-
     return b

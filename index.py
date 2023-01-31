@@ -1,4 +1,4 @@
-import os, json
+import os, json, sys
 import faiss
 import numpy as np
 from tqdm import tqdm
@@ -80,7 +80,6 @@ def main():
         size_vector = 300
 
 
-    #index_abstract = createIndex(size_vector)
     index_headers = createIndex(size_vector)
     index_content = createIndex(size_vector)
 

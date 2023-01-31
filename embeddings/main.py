@@ -10,6 +10,7 @@ from FastText import FastText
 from W2vec import Word2Vec
 from Bloom import Bloom
 from SciBert import SciBert
+import logging
 
 app = FastAPI()
 
