@@ -45,7 +45,7 @@ while obtained<total:
           file_name = file['key']
           doc['files'].append(str(doc['id'])+file_name)
 
-          download(str(doc['id']+file_name), file['links']['self'])
+          download(str(doc['id'])+file_name, file['links']['self'])
           with open('/raid/wake/data/'+str(doc['id'])+".json", "w") as outfile:
             json.dump(doc, outfile)
     except Exception as e:

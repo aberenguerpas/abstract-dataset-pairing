@@ -31,14 +31,8 @@ def classify(m):
 
 def index(m):
     print("Indexando con modelo:", m)
-    with subprocess.Popen(['./env/bin/python', 'index.py', '-m', m, '-i','data/'], 
-                            stdout=subprocess.PIPE,
-                            text=True,
-                            bufsize=0,
-                            stderr=subprocess.STDOUT) as proc:
-        while True:
-            if proc.poll() is not None:
-                break
+    with subprocess.Popen(['./env/bin/python', 'index.py', '-m', m, '-i','data/']) as proc:
+        proc.communicate()
         #    output = proc.stdout.readline()
         #        break
         #     if output:
@@ -47,9 +41,7 @@ def index(m):
 def main():
     try:
         for m in models:
-            with subprocess.Popen(['./env/bin/python','-u', 'embeddings/main.py', '-m', m], 
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE) as proc:
+            with subprocess.Popen(['./env/bin/python', 'embeddings/main.py', '-m', m]) as proc:
                 while proc.poll() is None:
                     if checkCall() == True:
                         index(m)
