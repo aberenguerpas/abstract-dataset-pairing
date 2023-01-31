@@ -139,9 +139,7 @@ def main():
 
             except Exception as e:
                 traceback.print_exc()
-                #print(t1)
-                #print(t2)
-                ignored+=1
+                ignored += 1
 
     saveIndex(index_headers, os.path.join('faiss_data', args.model+'_headers.faiss'))
     saveIndex(index_content, os.path.join('faiss_data', args.model+'_content.faiss'))

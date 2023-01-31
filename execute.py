@@ -37,11 +37,12 @@ def index(m):
                             bufsize=0,
                             stderr=subprocess.STDOUT) as proc:
         while True:
-            output = proc.stdout.readline()
-            if output=='' or proc.poll() is not None:
+            if proc.poll() is not None:
                 break
-            if output:
-                print(output.strip())
+        #    output = proc.stdout.readline()
+        #        break
+        #     if output:
+        #        print(output.strip())
 
 def main():
     try:
