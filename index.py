@@ -86,6 +86,7 @@ def main():
 
     for file in tqdm(files):
         try:
+            print(file)
             if file[0]=="'":
                 print('fuck')
             key = file[:7]
