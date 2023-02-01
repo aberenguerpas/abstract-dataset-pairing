@@ -1,13 +1,13 @@
 import pandas as pd
 import os, json
 from tqdm import tqdm
+import numpy as np
 
 def main():
     pd.set_option('display.float_format', lambda x: '%.3f' % x)
     files_path = '/raid/wake/data/'
     files = os.listdir(files_path)
-    files = [i for i in files if i.endswith(".csv")]
-    files.sort()
+    files = [i for i in files if i.endswith(".json")]
 
     results = []
     ignorados = 0
@@ -21,20 +21,32 @@ def main():
                 n_words = len(desc.split(' '))
                 dataset['n_words_abstract'] = n_words
 
-                df = pd.read_csv(files_path+file, encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None)
+                dataset['n_rows'] = []
+                dataset['n_cols'] = []
+                dataset['numeric_cols'] = []
+                dataset['cat_cols'] = []
 
-                dataset['n_rows'] = len(df.index)
-                dataset['n_cols'] = len(df.columns)
+                for f in data['files']:
+                    df = pd.read_csv(files_path+f, encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None)
 
-                num_cols = 0
-                for col in df.columns:
-                    if df[col].dtype.kind in 'biufc':
-                        num_cols+=1
+                    dataset['n_rows'].append(len(df.index))
+                    dataset['n_cols'].append(len(df.columns))
 
-                dataset['numeric_cols'] = num_cols
-                dataset['cat_cols'] = len(df.columns) - dataset['numeric_cols']
+                    num_cols = 0
+                    for col in df.columns:
+                        if df[col].dtype.kind in 'biufc':
+                            num_cols+=1
 
+                    dataset['numeric_cols'] = num_cols
+                    dataset['cat_cols'] = len(df.columns) - dataset['numeric_cols']
+
+
+                np.mean(dataset['n_rows'])
+                np.mean(dataset['n_cols'])
+                np.mean(dataset['numeric_cols'])
+                np.mean(dataset['cat_cols'])
                 print(file, dataset['numeric_cols'], dataset['cat_cols'])
+               
                     
                 results.append(dataset)
         except Exception as e:
