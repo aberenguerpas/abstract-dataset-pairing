@@ -48,7 +48,8 @@ def main():
                                    
                 results.append(dataset)
 
-            print(df.describe())
+            df2 = pd.DataFrame.from_dict(results)
+            print(df2.describe())
         except Exception as e:
             print(e)
             ignorados+=1
