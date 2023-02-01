@@ -37,17 +37,15 @@ def main():
                         if df[col].dtype.kind in 'biufc':
                             num_cols+=1
 
-                    dataset['numeric_cols'] = num_cols
-                    dataset['cat_cols'] = len(df.columns) - dataset['numeric_cols']
+                    dataset['numeric_cols'].append(num_cols)
+                    dataset['cat_cols'].append(len(df.columns) - dataset['numeric_cols'])
 
 
                 np.mean(dataset['n_rows'])
                 np.mean(dataset['n_cols'])
                 np.mean(dataset['numeric_cols'])
                 np.mean(dataset['cat_cols'])
-                print(file, dataset['numeric_cols'], dataset['cat_cols'])
-               
-                    
+                                   
                 results.append(dataset)
         except Exception as e:
             print(e)
@@ -66,6 +64,7 @@ def main():
     print('Nº numeric cols', df.loc[:,'numeric_cols'].sum())
     print('Nº categorical cols', df.loc[:,'cat_cols'].sum())
 
+    print(df)
     print(df.describe())
 if __name__ == "__main__":
     main()
