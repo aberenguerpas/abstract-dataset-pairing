@@ -10,11 +10,11 @@ def getEmbeddings(data):
         return []
 
 
-a = ['I have an apple in my fridge']
+a = ['DNA is a key element in biology']
 
 b = a[0].split(" ")
-
-c = ['boat']
+print(b)
+c = ['lie like a horse 876']
 
 a = np.array(getEmbeddings(a))[0]
 b = np.mean(getEmbeddings(b), axis=0)

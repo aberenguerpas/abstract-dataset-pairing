@@ -41,12 +41,14 @@ def main():
                     dataset['cat_cols'].append(len(df.columns) - num_cols)
 
 
-                np.mean(dataset['n_rows'])
-                np.mean(dataset['n_cols'])
-                np.mean(dataset['numeric_cols'])
-                np.mean(dataset['cat_cols'])
+                np.mean(dataset['n_rows'], axis=0)
+                np.mean(dataset['n_cols'], axis=0)
+                np.mean(dataset['numeric_cols'], axis=0)
+                np.mean(dataset['cat_cols'], axis=0)
                                    
                 results.append(dataset)
+
+            print(df.describe())
         except Exception as e:
             print(e)
             ignorados+=1
