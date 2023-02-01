@@ -10,14 +10,15 @@ def getEmbeddings(data):
         return []
 
 
-a = ['DNA is a key element in biology']
+a = ['I want a break free']
 
 b = a[0].split(" ")
-print(b)
-c = ['lie like a horse 876']
+
+c = ['12 45 23']
 
 a = np.array(getEmbeddings(a))[0]
 b = np.mean(getEmbeddings(b), axis=0)
+print(b)
 c = np.array(getEmbeddings(c))[0]
 
 cos = torch.nn.CosineSimilarity(dim=0)

@@ -1,6 +1,6 @@
 from transformers import BertTokenizer, BertModel
 import torch
-
+import numpy as np
 class Bert:
 
     def __init__(self):
@@ -11,14 +11,19 @@ class Bert:
 
     def getEmbedding(self, data):
         torch.cuda.empty_cache()
-        with torch.no_grad():
-            tab = self.tokenizer(
-                    data,
-                    padding=True,
-                    truncation=True,
-                    return_tensors="pt"
-            ).to(self.device)
+        res = []
+        for d in data:
+            d = d.split(" ")
+            with torch.no_grad():
+                tab = self.tokenizer(
+                        d,
+                        padding=True,
+                        truncation=True,
+                        return_tensors="pt"
+                ).to(self.device)
 
-            self.model = self.model.to(self.device)
-            output = self.model(**tab)
-            return [i[0] for i in output.last_hidden_state]
+                self.model = self.model.to(self.device)
+                output = self.model(**tab)
+                res.append(np.mean([i[0].numpy() for i in output.last_hidden_state], axis=0))
+
+        return res
