@@ -1,40 +1,40 @@
 import pandas as pd
 import os, json
 from tqdm import tqdm
-import numpy as np
 
 def main():
     pd.set_option('display.float_format', lambda x: '%.3f' % x)
     files_path = '/raid/wake/data/'
     files = os.listdir(files_path)
+    files = [i for i in files if i.endswith(".csv")]
+    files.sort()
 
     results = []
     ignorados = 0
 
     for file in tqdm(files):
         try:
-            if file[-4:] == 'json':
-                dataset = dict()
-                with open(files_path+file, 'r') as f:
-                    data = json.load(f)
-                    desc = data['desc'].replace('&nbsp;',' ')
-                    n_words = len(desc.split(' '))
-                    dataset['n_words_abstract'] = n_words
+            dataset = dict()
+            with open(files_path+file, 'r') as f:
+                data = json.load(f)
+                desc = data['desc'].replace('&nbsp;',' ')
+                n_words = len(desc.split(' '))
+                dataset['n_words_abstract'] = n_words
 
-                    df = pd.read_csv(files_path+str(data['id'])+'.csv', encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None)
+                df = pd.read_csv(files_path+file, encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None)
 
-                    dataset['n_rows'] = len(df.index)
-                    dataset['n_cols'] = len(df.columns)
+                dataset['n_rows'] = len(df.index)
+                dataset['n_cols'] = len(df.columns)
 
-                    num_cols = 0
-                    for col in df.columns:
-                        if df[col].dtype.kind in 'biufc':
-                            num_cols+=1
+                num_cols = 0
+                for col in df.columns:
+                    if df[col].dtype.kind in 'biufc':
+                        num_cols+=1
 
-                    dataset['numeric_cols'] = num_cols
-                    dataset['cat_cols'] = len(df.columns) - dataset['numeric_cols']
+                dataset['numeric_cols'] = num_cols
+                dataset['cat_cols'] = len(df.columns) - dataset['numeric_cols']
 
-                    print(file, dataset['numeric_cols'], dataset['cat_cols'])
+                print(file, dataset['numeric_cols'], dataset['cat_cols'])
                     
                 results.append(dataset)
         except Exception as e:
