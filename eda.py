@@ -49,7 +49,7 @@ def main():
                 results.append(dataset)
 
             df2 = pd.DataFrame.from_dict(results)
-            print(df2.describe())
+            print(df2)
         except Exception as e:
             print(e)
             ignorados+=1
