@@ -41,7 +41,7 @@ def main():
                     dataset['cat_cols'].append(len(df.columns) - num_cols)
 
 
-                dataset['n_rows'] = np.mean(dataset['n_rows'], axis=0)[0]
+                dataset['n_rows'] = np.mean(dataset['n_rows'], axis=0)
                 dataset['n_cols'] = np.mean(dataset['n_cols'], axis=0)
                 dataset['numeric_cols'] = np.mean(dataset['numeric_cols'], axis=0)
                 dataset['cat_cols'] = np.mean(dataset['cat_cols'], axis=0)
