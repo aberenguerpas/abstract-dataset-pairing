@@ -14,7 +14,7 @@ def getEmbeddings(data):
     if response.status_code == 200:
         return response.json()['emb']
     else:
-        logger.warning(msg="Problem getting embeddings" + response.status_cod)
+        logger.warning(msg="Problem getting embeddings" + response.status_code)
 
 
 def proccessHeaders(headers):
@@ -136,7 +136,7 @@ def main():
             index_content.add_with_ids(t2_vec, id)
 
         except Exception as e:
-            logger.error("Exception occurred "+ e, exc_info=True)
+            logger.error("Exception occurred ", exc_info=True)
             logger.error("Problem with file "+ file)
             ignored += 1
 
@@ -146,7 +146,7 @@ def main():
     saveInvertedIndex(invertedIndex, os.path.join('faiss_data', args.model+'_invertedIndex'))
 
     logger.info("Files ignored "+str(ignored))
-    logger.info('Indexation time '+ args.model+ ': ' + str(round((time.time() - start_time)/60, 2)) + ' minutes')
+    logger.info('Indexation time '+ args.model+ ': ' + str(round(time.time() - start_time, 2)) + ' seconds')
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

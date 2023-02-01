@@ -13,7 +13,7 @@ def getEmbeddings(data):
     if response.status_code == 200:
         return response.json()['emb']
     else:
-        logger.warning(msg="Problem getting embeddings" + response.status_cod)
+        logger.warning(msg="Problem getting embeddings" + response.status_code)
 
 
 def proccessText(text):
