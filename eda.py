@@ -40,7 +40,6 @@ def main():
                     dataset['numeric_cols'].append(num_cols)
                     dataset['cat_cols'].append(len(df.columns) - num_cols)
 
-
                 dataset['n_rows'] = np.mean(dataset['n_rows'], axis=0)
                 dataset['n_cols'] = np.mean(dataset['n_cols'], axis=0)
                 dataset['numeric_cols'] = np.mean(dataset['numeric_cols'], axis=0)
@@ -48,8 +47,6 @@ def main():
                                    
                 results.append(dataset)
 
-            df2 = pd.DataFrame.from_dict(results)
-            print(df2)
         except Exception as e:
             print(e)
             ignorados+=1
