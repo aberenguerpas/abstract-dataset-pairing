@@ -36,9 +36,9 @@ def main():
                     for col in df.columns:
                         if df[col].dtype.kind in 'biufc':
                             num_cols+=1
-
+                    
                     dataset['numeric_cols'].append(num_cols)
-                    dataset['cat_cols'].append(len(df.columns) - dataset['numeric_cols'])
+                    dataset['cat_cols'].append(len(df.columns) - num_cols)
 
 
                 np.mean(dataset['n_rows'])
