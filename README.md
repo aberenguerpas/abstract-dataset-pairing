@@ -3,10 +3,10 @@
 
 ### Corpus EDA
 N° tables 419 <br />
-N° rows 339324849 <br />
-N° cols 231828 <br />
-N° numeric cols 31814 <br />
-N° categorical cols 4401 <br />
+N° rows 85912560 <br />
+N° cols 32585 <br />
+N° numeric cols 26784 <br />
+N° categorical cols 5801 <br />
 
 |       | n_words_abstract | n_rows   | n_cols   | numeric_cols | categorical_cols |
 |-------|------------------|----------|----------|--------------|------------------|
