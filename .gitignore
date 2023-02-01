@@ -133,3 +133,4 @@ data/
 .DS_Store
 embeddings/models/
 faiss_data/
+clasification/
