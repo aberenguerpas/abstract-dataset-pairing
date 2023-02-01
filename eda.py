@@ -5,7 +5,7 @@ import numpy as np
 
 def main():
     pd.set_option('display.float_format', lambda x: '%.3f' % x)
-    files_path = './data/'
+    files_path = '/raid/wake/data/'
     files = os.listdir(files_path)
 
     results = []
