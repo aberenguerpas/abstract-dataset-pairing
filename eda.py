@@ -64,7 +64,6 @@ def main():
     print('Nº numeric cols', df.loc[:,'numeric_cols'].sum())
     print('Nº categorical cols', df.loc[:,'cat_cols'].sum())
 
-    print(df)
     print(df.describe())
 if __name__ == "__main__":
     main()
