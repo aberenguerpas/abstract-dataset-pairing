@@ -24,6 +24,6 @@ class Bert:
 
                 self.model = self.model.to(self.device)
                 output = self.model(**tab)
-                res.append(np.mean([i[0].numpy() for i in output.last_hidden_state], axis=0))
+                res.append(np.mean([i[0].cpu().numpy() for i in output.last_hidden_state], axis=0))
 
         return res

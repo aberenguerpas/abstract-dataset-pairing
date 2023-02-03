@@ -61,7 +61,7 @@ def search(vec_abstract, index_h, index_c, inverted, alpha):
     # Ordenar ranking
     ranking_sort = sorted(ranking.items(), key=lambda x: x[1], reverse=True)
    
-    return list(map(lambda x: x[0], ranking_sort[:10])) # Nos quedamos con el top 10
+    return list(map(lambda x: x[0], ranking_sort[:5])) # Nos quedamos con el top 10
     #return ranking_sort[:5]
 
 def getScore(id, results_h, results_c, alpha):
@@ -84,13 +84,25 @@ def getScore(id, results_h, results_c, alpha):
 
     return score
 
-def checkPos(id,lis):
+def checkPos(id, lis):
     count = 1
     for item in reversed(lis):
         if item == id:
             return count/len(lis)
         count+=1
     return 0
+
+def checkPrecision(id, lis):
+    res = []
+
+    for i in [1,3,5]:
+        if id in lis[:i]:
+            res.append(1)
+        else:
+            res.append(0)
+
+    return res
+
 
 def main():
 
@@ -114,8 +126,10 @@ def main():
 
     # Counters
     mmr = dict()
+    precision = dict()
     for alpha in np.arange(0, 1.1, 0.1):
         mmr[alpha] = []
+        precision[alpha] = []
     
     # Read abstracts
     files = os.listdir(args.input)
@@ -135,6 +149,8 @@ def main():
                 for alpha in np.arange(0, 1.1, 0.1):
                     rank = search(vec_abstract, index_headers, index_content, inverted, alpha)
                     # Check in results are correct
+                    
+                    precision[alpha].append(checkPrecision(file[:-5], rank))
                     points = checkPos(file[:-5], rank)        
                     mmr[alpha].append(points)
 
@@ -145,9 +161,16 @@ def main():
     # Create a file with the results
     results = ["Results model "+args.model+"\n"]
     logger.info("Saving info from model "+args.model)
+    results.append("-------------------------------------- \n")
 
     for alpha in np.arange(0, 1.1, 0.1):
-        text = 'alpha ' + str(round(alpha,1))+ ' MMR: '+ str(round(np.mean(mmr[alpha]),2))
+        text = 'alpha ' + str(round(alpha,1))+ '- MMR: '+ str(round(np.mean(mmr[alpha]),2))
+        logger.info(text)
+        results.append(text + "\n")
+
+    results.append("-------------------------------------- \n")
+    for alpha in np.arange(0, 1.1, 0.1):
+        text = 'alpha ' + str(round(alpha,1))+ '. Precision Top 1/3/5: '+ str(np.sum(precision[alpha], axis=0)/len(precision[alpha]))
         logger.info(text)
         results.append(text + "\n")
 
