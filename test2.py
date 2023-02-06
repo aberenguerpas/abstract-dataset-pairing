@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-files_path = './data/'
+files_path = '/raid/wake/data/'
 files = os.listdir(files_path)
 
 files = [i for i in files if i.endswith(".csv")]
