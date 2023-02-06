@@ -53,6 +53,16 @@ def proccessText(text):
     else:
         return [text]
 
+
+def isNum(df):
+    num_cols = 0
+    for col in df.columns:
+        col = col.replace('-','')
+        col = col.replace('.','')
+        if col.isnumeric():
+            num_cols+=1
+    return num_cols/len(df.columns)
+
 def main():
     start_time = time.time()
 
@@ -86,12 +96,18 @@ def main():
     index_content = createIndex(size_vector)
 
     ignored = 0
+    discard = []
 
     for file in tqdm(files):
         try:
             key = file[:7]
             # Headers
             df = pd.read_csv(files_path+file , encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
+            # Check if headers are numeric
+            if isNum(df)>0.2:
+                ignored+=1
+                discard.append(key)
+                continue
             t1 = proccessHeaders(df.columns.values)
             t1_vec = np.array(getEmbeddings(t1), dtype="float32")
             if t1_vec.shape[0] > 1:
@@ -144,6 +160,8 @@ def main():
     saveIndex(index_headers, os.path.join('faiss_data', args.model+'_headers.faiss'))
     saveIndex(index_content, os.path.join('faiss_data', args.model+'_content.faiss'))
     saveInvertedIndex(invertedIndex, os.path.join('faiss_data', args.model+'_invertedIndex'))
+    # Save discarted abstracts
+    saveInvertedIndex(discard, './disc')
 
     logger.info("Files ignored "+str(ignored))
     logger.info('Indexation time '+ args.model+ ': ' + str(round(time.time() - start_time, 2)) + ' seconds')

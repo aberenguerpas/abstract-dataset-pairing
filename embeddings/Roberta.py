@@ -10,9 +10,6 @@ class Roberta:
        self.dimensions = 1024
 
     def getEmbedding(self, data):
-        res = []
-        for d in data:
-            d = d.split(" ")
-            embeddings = self.model.encode(d)
-            res.append(np.mean(embeddings, axis=0))        
-        return res
+
+        embeddings = self.model.encode(data)
+        return embeddings

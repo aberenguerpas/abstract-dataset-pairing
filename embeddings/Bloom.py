@@ -13,18 +13,14 @@ class Bloom:
 
     def getEmbedding(self, data):
         torch.cuda.empty_cache()
-        res = []
-        for d in data:
-            d = d.split(" ")
-            with torch.no_grad():
-                tab = self.tokenizer(
-                        d,
-                        padding=True,
-                        return_tensors="pt"
-                ).to(self.device)
 
-                self.model = self.model.to(self.device)
-                output = self.model(**tab)
-                res.append(np.mean([i[0].cpu().numpy() for i in output.last_hidden_state], axis=0))
+        with torch.no_grad():
+            tab = self.tokenizer(
+                    data,
+                    padding=True,
+                    return_tensors="pt"
+            ).to(self.device)
 
-        return res
+            self.model = self.model.to(self.device)
+            output = self.model(**tab)
+            return [i[0] for i in output.last_hidden_state]

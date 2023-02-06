@@ -124,6 +124,9 @@ def main():
     # Read inversed Index
     inverted = loadInversedIndex(os.path.join(args.indexdir, args.model+'_invertedIndex'))
 
+     # Read discarted
+    discarted = loadInversedIndex('./disc')
+
     # Counters
     mmr = dict()
     precision = dict()
@@ -134,6 +137,11 @@ def main():
     # Read abstracts
     files = os.listdir(args.input)
     files = [i for i in files if i.endswith(".json")]
+
+    for i in discarted:
+        files.remove(i+".json")
+ 
+
     files.sort()
     logger.info("Classifying  " + str(len(files))+ " files...")
     for file in tqdm(files):

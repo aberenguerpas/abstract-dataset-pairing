@@ -22,7 +22,7 @@ def index(m):
         proc.communicate()
 
 def main():
-    models = ['stb', 'brt', 'rbt', 'fst', 'w2v', 'sci', 'blo']
+    models = ['stb','brt', 'rbt', 'fst', 'w2v', 'sci', 'blo']
 
     try:
         for m in models:
