@@ -138,9 +138,11 @@ def main():
     files = os.listdir(args.input)
     files = [i for i in files if i.endswith(".json")]
 
-    for i in discarted:
-        files.remove(i+".json")
- 
+    try:
+        for i in discarted:
+            files.remove(i+".json")
+    except Exception as e:
+            logger.error("Exception occurred", exc_info=True)
 
     files.sort()
     logger.info("Classifying  " + str(len(files))+ " files...")
