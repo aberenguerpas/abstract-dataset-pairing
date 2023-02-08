@@ -126,7 +126,7 @@ def main():
 
      # Read discarted
     discarted = loadInversedIndex('./disc')
-
+    discarted = list(dict.fromkeys(discarted))
     # Counters
     mmr = dict()
     precision = dict()
@@ -137,9 +137,10 @@ def main():
     # Read abstracts
     files = os.listdir(args.input)
     files = [i for i in files if i.endswith(".json")]
-
+  
     for i in discarted:
         try:
+            
             files.remove(i+".json")
         except Exception as e:
             print(i+".json")
