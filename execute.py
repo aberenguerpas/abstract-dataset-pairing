@@ -13,16 +13,16 @@ def checkCall():
 
 def classify(m):
     print("Getting classification with:", m)
-    with subprocess.Popen(['./env/bin/python', 'classify.py', '-m', m, '-i','/raid/wake/data/']) as proc:
+    with subprocess.Popen(['./env/bin/python', 'classify.py', '-m', m, '-i','data/']) as proc:
         proc.communicate()
 
 def index(m):
     print("Indexing with:", m)
-    with subprocess.Popen(['./env/bin/python', 'index.py', '-m', m, '-i','/raid/wake/data/']) as proc:
+    with subprocess.Popen(['./env/bin/python', 'index.py', '-m', m, '-i','data/']) as proc:
         proc.communicate()
 
 def main():
-    models = ['stb','brt', 'rbt', 'fst', 'w2v', 'sci', 'blo']
+    models = ['w2v','fst', 'stb','brt', 'rbt', 'sci', 'blo']
 
     try:
         for m in models:

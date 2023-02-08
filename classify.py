@@ -142,6 +142,7 @@ def main():
         try:
             files.remove(i+".json")
         except Exception as e:
+            print(i+".json")
             logger.error("Exception occurred", exc_info=True)
 
     files.sort()
