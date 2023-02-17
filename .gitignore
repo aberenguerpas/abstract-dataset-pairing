@@ -129,6 +129,7 @@ dmypy.json
 .pyre/
 
 data/
+data2/
 
 .DS_Store
 embeddings/models/

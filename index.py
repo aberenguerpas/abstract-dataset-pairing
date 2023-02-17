@@ -1,4 +1,4 @@
-import os
+import os, json, re
 import faiss
 import numpy as np
 from tqdm import tqdm
@@ -21,10 +21,12 @@ def proccessHeaders(headers):
     # Lowercase the text because the sentence model is uncased
     headers = [ h if not 'Unnamed:' in h else '' for h in headers]
     headers = ' '.join(headers)
-    #headers = headers.replace('.',' ')
-    #headers = headers.replace('_',' ')
+    headers = headers.replace('.',' ')
+    headers = headers.replace('_',' ')
+    headers = headers.replace('-',' ')
+    #headers = re.sub(r'(?<!^)(?=[A-Z])', ' ', headers)
     headers = headers.lower()
-    headers = headers.replace('&nbsp;',' ')
+    #headers = headers.replace('&nbsp;',' ')
     # The maximum token length admitted by is 256
     max_sequence_length = 128
     # Larger texts are cut into 256 token length pieces and their vectors are averaged
@@ -88,11 +90,8 @@ def main():
 
     files_path = args.input
 
-    files = os.listdir(files_path)
-
-    files = [i for i in files if i.endswith(".csv")]
-    files.sort()
-
+    files = [i for i in os.listdir(files_path) if i.endswith(".json")]
+  
     invertedIndex = dict()
     if args.model == 'sci' or args.model == 'brt':
         size_vector = 768
@@ -111,63 +110,75 @@ def main():
 
     for file in tqdm(files):
         try:
-            key = file[:7]
-            # Headers
-            df = pd.read_csv(files_path+file , encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
-            # Check if headers are numeric or if all columns are numeric
+            key = ""
+            with open(os.path.join(files_path, file), 'r') as f:
+                meta = json.load(f)
+                key = meta["id_no"]
 
-            if isNum(df)>0.2 or isNumCol(df)==1:
-                ignored+=1
-                discard.append(key)
-                continue
-            
+            for dfile in meta['data']:
+                if not dfile.endswith(".csv"):
+                    continue
+                dfile = os.path.join(files_path, dfile)
                 
-            t1 = proccessHeaders(df.columns.values)
-            #print(t1)
-            t1_vec = np.array(getEmbeddings(t1), dtype="float32")
-            if t1_vec.shape[0] > 1:
-                t1_vec = np.array([np.mean(t1_vec, axis=0)], dtype="float32")
+                df=""
+                # Headers
+                try:
+                    df = pd.read_csv(dfile , encoding = "utf-8-sig", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
+                except Exception:
+                    df = pd.read_csv(dfile , encoding = "unicode_escape", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
+                # Check if headers are numeric or if all columns are numeric
 
-            faiss.normalize_L2(t1_vec)
-
-            # Content
-            t2 = []
-            if len(df.index)>1000:
-                df = df.sample(frac=0.1, replace=True, random_state=1)
-            
-            for col in df.columns:
-                #if not df[col].dtype.kind in 'biufc': # Elimina las numericas
-                aux = proccessText(' '.join(df[col].astype(str).tolist()))
+                if isNum(df)>0.2: #or isNumCol(df)==1:
+                    ignored+=1
+                    discard.append(meta["id"].replace("/","-"))
+                    continue
                 
-                emb = ""
-                # Split text - too big , memory problems
-                if len(aux) > 300:
-                    for a in range(0, len(aux), 300):
-                        if a==0:
-                            emb = getEmbeddings(aux[a:a+300])
-                        else:
-                            emb = np.append(emb, getEmbeddings(aux[a:a+300]), axis=0)
+                    
+                t1 = proccessHeaders(df.columns.values)
+                t1_vec = np.array(getEmbeddings(t1), dtype="float32")
+                if t1_vec.shape[0] > 1:
+                    t1_vec = np.array([np.mean(t1_vec, axis=0)], dtype="float32")
+
+                faiss.normalize_L2(t1_vec)
+
+                # Content
+                t2 = []
+                if len(df.index)>1000:
+                    df = df.sample(frac=0.1, replace=True, random_state=1)
+                
+                for col in df.columns:
+                    #if not df[col].dtype.kind in 'biufc': # Elimina las numericas
+                    aux = proccessText(' '.join(df[col].astype(str).tolist()))
+                    
+                    emb = ""
+                    # Split text - too big , memory problems
+                    if len(aux) > 300:
+                        for a in range(0, len(aux), 300):
+                            if a==0:
+                                emb = getEmbeddings(aux[a:a+300])
+                            else:
+                                emb = np.append(emb, getEmbeddings(aux[a:a+300]), axis=0)
+                    else:
+                        emb = getEmbeddings(aux)
+
+                    emb = np.array(emb, dtype="float32")
+                
+                    if np.any(emb):
+                        if emb.shape[0] > 1:
+                            emb =  np.array([np.mean(emb, axis=0)], dtype="float32")
+                    
+                        faiss.normalize_L2(emb)
+                        t2.append(emb)
+                
+                if len(t2) > 0:
+                    t2_vec = np.array(np.mean(t2, axis=0))
+
+                    id = np.random.randint(0, 99999999999999, size=1)
+                    invertedIndex[id[0]] = key
+                    index_headers.add_with_ids(t1_vec, id)
+                    index_content.add_with_ids(t2_vec, id)
                 else:
-                    emb = getEmbeddings(aux)
-
-                emb = np.array(emb, dtype="float32")
-            
-                if np.any(emb):
-                    if emb.shape[0] > 1:
-                        emb =  np.array([np.mean(emb, axis=0)], dtype="float32")
-                
-                    faiss.normalize_L2(emb)
-                    t2.append(emb)
-            
-            if len(t2) > 0:
-                t2_vec = np.array(np.mean(t2, axis=0))
-
-                id = np.random.randint(0, 99999999999999, size=1)
-                invertedIndex[id[0]] = key
-                index_headers.add_with_ids(t1_vec, id)
-                index_content.add_with_ids(t2_vec, id)
-            else:
-                discard.append(key)
+                    discard.append(key)
 
         except Exception as e:
             print('No vector available')

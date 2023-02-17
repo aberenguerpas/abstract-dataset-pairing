@@ -140,10 +140,9 @@ def main():
   
     for i in discarted:
         try:
-            
             files.remove(i+".json")
         except Exception as e:
-            print(i+".json")
+
             logger.error("Exception occurred", exc_info=True)
 
     files.sort()
@@ -153,7 +152,7 @@ def main():
             with open(os.path.join(args.input,file), 'r') as f:
                 data = json.load(f)
                 
-                abstract = proccessText(data['desc'])
+                abstract = proccessText(data['titleNullable']+ " " +data['subtitleNullable'])
                 # Create embedding abstract
                 vec_abstract = np.array(getEmbeddings(abstract)).astype(np.float32)
 
@@ -161,9 +160,8 @@ def main():
                 for alpha in np.arange(0, 1.1, 0.1):
                     rank = search(vec_abstract, index_headers, index_content, inverted, alpha)
                     # Check in results are correct
-                    
-                    precision[alpha].append(checkPrecision(file[:-5], rank))
-                    points = checkPos(file[:-5], rank)        
+                    precision[alpha].append(checkPrecision(data['id_no'], rank))
+                    points = checkPos(data['id_no'], rank)        
                     mmr[alpha].append(points)
 
         except Exception as e:
