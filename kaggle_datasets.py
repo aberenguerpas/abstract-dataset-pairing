@@ -7,7 +7,7 @@ api = KaggleApi()
 api.authenticate()
 count = 1
 
-path = os.path.join(os.getcwd(),'/raid/wake/data/')
+path = os.path.join(os.getcwd(),'./data/')
 data_list = [1]
 while len(data_list)!=0:
    
