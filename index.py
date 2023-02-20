@@ -1,4 +1,4 @@
-import os, json, re
+import os, json, sys, csv
 import faiss
 import numpy as np
 from tqdm import tqdm
@@ -77,6 +77,7 @@ def isNum(df):
     return num_cols/len(df.columns)
 
 def main():
+    csv.field_size_limit(sys.maxsize)
     start_time = time.time()
 
     parser = argparse.ArgumentParser(description='Process WikiTables corpus')
