@@ -128,11 +128,10 @@ def main():
                     df = pd.read_csv(dfile , encoding = "unicode_escape", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
                 # Check if headers are numeric or if all columns are numeric
 
-                if isNum(df)>0.2: #or isNumCol(df)==1:
+                if isNum(df)>0.2 and len(df.columns.values)<4: #or isNumCol(df)==1:
                     ignored+=1
                     discard.append(meta["id"].replace("/","-"))
                     continue
-                
                     
                 t1 = proccessHeaders(df.columns.values)
                 t1_vec = np.array(getEmbeddings(t1), dtype="float32")
@@ -178,7 +177,7 @@ def main():
                     index_headers.add_with_ids(t1_vec, id)
                     index_content.add_with_ids(t2_vec, id)
                 else:
-                    discard.append(key)
+                    discard.append(meta["id"].replace("/","-"))
 
         except Exception as e:
             print('No vector available')

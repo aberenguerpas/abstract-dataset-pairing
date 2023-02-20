@@ -160,6 +160,7 @@ def main():
                 for alpha in np.arange(0, 1.1, 0.1):
                     rank = search(vec_abstract, index_headers, index_content, inverted, alpha)
                     # Check in results are correct
+                    #print(data['id_no'], rank)
                     precision[alpha].append(checkPrecision(data['id_no'], rank))
                     points = checkPos(data['id_no'], rank)        
                     mmr[alpha].append(points)
