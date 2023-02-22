@@ -1,29 +1,31 @@
-import requests
-import torch 
-import numpy as np
+# convert pmid to pmcid 
+import ijson, json, os
+import pickle
+from glob import glob
+from tqdm import tqdm
 
-def getEmbeddings(data):
-    response = requests.post('http://localhost:5000/getEmbeddings', json = {'data':data})
-    if response.status_code == 200:
-        return response.json()['emb']
-    else:
-        return []
+with open('./mapping.pickle', 'rb') as handle:
+    b = pickle.load(handle)
+
+all_files = os.listdir('./data2/')
 
 
-a = ['I want a break free']
+f = open('/raid/wake/raw_data/pubmed_sorted.json')
+objects = ijson.items(f, 'articles.item')
+for obj in tqdm(objects):
+    try:
+        aux = dict()
+        aux['id'] = b[obj['pmid']]
+        aux['abstract'] = obj["abstractText"]
+        aux['keywords'] = list(obj["mesh"].values())
 
-b = a[0].split(" ")
+        #data = glob("./data2/"+aux["id"]+'*.csv')
+        data = [i for i in all_files if aux["id"] in i]
 
-c = ['12 45 23']
-
-a = np.array(getEmbeddings(a))[0]
-b = np.mean(getEmbeddings(b), axis=0)
-print(b)
-c = np.array(getEmbeddings(c))[0]
-
-cos = torch.nn.CosineSimilarity(dim=0)
-sim = cos(torch.from_numpy(a), torch.from_numpy(b))
-sim2 = cos(torch.from_numpy(a), torch.from_numpy(c))
-
-print('Similitud:', float(sim))
-print('no Similitud:', float(sim2))
+        if data:
+            aux['data'] = data
+            
+            with open("./data3/"+aux['id']+".json", "w") as outfile:
+                json.dump(aux, outfile, indent=4)
+    except Exception as e:
+        pass

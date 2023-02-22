@@ -8,6 +8,8 @@ import pandas as pd
 import time
 import argparse
 import logging
+from glob import glob
+
 
 def getEmbeddings(data):
     response = requests.post('http://localhost:5000/getEmbeddings', json = {'data':data})
@@ -91,6 +93,9 @@ def main():
 
     files_path = args.input
 
+    files_path ="./data3/"
+    files_path2 ="./data2/"
+
     files = [i for i in os.listdir(files_path) if i.endswith(".json")]
   
     invertedIndex = dict()
@@ -108,32 +113,36 @@ def main():
 
     ignored = 0
     discard = []
-
+    files = files[:50]
     for file in tqdm(files):
         try:
             key = ""
             with open(os.path.join(files_path, file), 'r') as f:
                 meta = json.load(f)
-                key = meta["id_no"]
+                key = meta['id']
+
 
             for dfile in meta['data']:
                 if not dfile.endswith(".csv"):
                     continue
-                dfile = os.path.join(files_path, dfile)
+                dfile = os.path.join(files_path2, dfile)
                 
                 df=""
+                #file = os.path.join(files_path, file)
                 # Headers
                 try:
                     df = pd.read_csv(dfile , encoding = "utf-8-sig", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
                 except Exception:
                     df = pd.read_csv(dfile , encoding = "unicode_escape", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
-                # Check if headers are numeric or if all columns are numeric
+                
 
-                if isNum(df)>0.2 and len(df.columns.values)<4: #or isNumCol(df)==1:
+                # Check if headers are numeric or if all columns are numeric
+                #print(df.head())
+                if isNum(df)>0.2 and len(df.columns.values)<2: #or isNumCol(df)==1:
                     ignored+=1
-                    discard.append(meta["id"].replace("/","-"))
+                    discard.append(key)
                     continue
-                    
+        
                 t1 = proccessHeaders(df.columns.values)
                 t1_vec = np.array(getEmbeddings(t1), dtype="float32")
                 if t1_vec.shape[0] > 1:
@@ -178,7 +187,7 @@ def main():
                     index_headers.add_with_ids(t1_vec, id)
                     index_content.add_with_ids(t2_vec, id)
                 else:
-                    discard.append(meta["id"].replace("/","-"))
+                    discard.append(key)
 
         except Exception as e:
             print('No vector available')
