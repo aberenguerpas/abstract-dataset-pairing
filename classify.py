@@ -137,7 +137,7 @@ def main():
     # Read abstracts
     files = os.listdir(args.input)
     files = [i for i in files if i.endswith(".json")]
-    files = files[:50]
+    
     for i in discarted:
         try:
             files.remove(i+".json")
@@ -152,12 +152,10 @@ def main():
             with open(os.path.join(args.input,file), 'r') as f:
                 data = json.load(f)
    
-                
                 abstract = proccessText(data['abstract'])
                 # Create embedding abstract
                 vec_abstract = np.array(getEmbeddings(abstract)).astype(np.float32)
       
-
                 # Search
                 for alpha in np.arange(0, 1.1, 0.1):
                     rank = search(vec_abstract, index_headers, index_content, inverted, alpha)

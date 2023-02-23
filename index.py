@@ -113,7 +113,7 @@ def main():
 
     ignored = 0
     discard = []
-    files = files[:50]
+ 
     for file in tqdm(files):
         try:
             key = ""

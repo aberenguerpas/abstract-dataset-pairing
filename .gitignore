@@ -131,6 +131,7 @@ dmypy.json
 data/
 data2/
 disc.pickle
+mapping.pickle
 
 .DS_Store
 embeddings/models/
