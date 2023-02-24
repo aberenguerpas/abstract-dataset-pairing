@@ -42,19 +42,19 @@ def search(vec_abstract, index_h, index_c, inverted, alpha):
 
     # Headers search
     start = time.time()
-    distances_h, indices_h = index_h.search(vec_abstract, 20) #index_h.ntotal - 1
+    distances_h, indices_h = index_h.search(vec_abstract, 50) #index_h.ntotal - 1
     
     results_h = [(inverted[r], distances_h[0][i]) for i, r in enumerate(indices_h[0])]
     ids_list += [k for k,_ in results_h]
-    print(time.time()- start)
+   
 
     # Content search
-    distances_c, indices_c = index_c.search(vec_abstract, 20) #index_c.ntotal - 1
+    distances_c, indices_c = index_c.search(vec_abstract, 50) #index_c.ntotal - 1
     results_c = [(inverted[r], distances_c[0][i]) for i, r in enumerate(indices_c[0])]
     ids_list += [k for k,_ in results_c]
 
     ids_list = list(set(ids_list)) # List with candidate tables id, delte duplicates
-
+    print(time.time()- start)
     # Ranking documents
     ranking = dict()
 
