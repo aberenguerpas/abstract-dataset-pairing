@@ -29,7 +29,7 @@ def main():
     parser.add_argument('-t', '--type', default='all', choices=['all', 'index','clas'])
 
     args = parser.parse_args()
-    models = ['stb','w2v','fst','brt', 'rbt', 'sci', 'blo']
+    models = ['w2v','fst','brt', 'rbt', 'sci', 'blo'] #stb
 
     try:
         for m in models:
@@ -42,7 +42,6 @@ def main():
                             classify(m)
                            
                         proc.kill()
-                break
 
     except subprocess.CalledProcessError as err:
         print("Error occurred when running pgrep : {}".format(err))
