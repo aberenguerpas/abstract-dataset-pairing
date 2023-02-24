@@ -41,7 +41,9 @@ def search(vec_abstract, index_h, index_c, inverted, alpha):
     faiss.normalize_L2(vec_abstract)
 
     # Headers search
+    start = time.time()
     distances_h, indices_h = index_h.search(vec_abstract, 20) #index_h.ntotal - 1
+    print(start - time.time())
     results_h = [(inverted[r], distances_h[0][i]) for i, r in enumerate(indices_h[0])]
     ids_list += [k for k,_ in results_h]
 
@@ -137,6 +139,8 @@ def main():
     # Read abstracts
     files = os.listdir(args.input)
     files = [i for i in files if i.endswith(".json")]
+
+    files = files[:50]
     
     for i in discarted:
         try:
@@ -159,8 +163,6 @@ def main():
                 # Search
                 for alpha in np.arange(0, 1.1, 0.1):
                     rank = search(vec_abstract, index_headers, index_content, inverted, alpha)
-                    # Check in results are correct
-                    #print(data['id_no'], rank)
                     precision[alpha].append(checkPrecision(data['id'], rank))
                     points = checkPos(data['id'], rank)        
                     mmr[alpha].append(points)

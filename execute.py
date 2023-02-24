@@ -2,6 +2,7 @@ import subprocess
 import requests
 import argparse
 
+
 def checkCall():
     try: 
         response = requests.post('http://localhost:5000/getEmbeddings', json = {'data':'a'})
@@ -39,7 +40,9 @@ def main():
                             index(m)
                         if args.type == 'clas' or args.type=="all":
                             classify(m)
+                           
                         proc.kill()
+                break
 
     except subprocess.CalledProcessError as err:
         print("Error occurred when running pgrep : {}".format(err))
