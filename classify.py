@@ -54,7 +54,7 @@ def search(vec_abstract, index_h, index_c, inverted, alpha):
     ids_list += [k for k,_ in results_c]
 
     ids_list = list(set(ids_list)) # List with candidate tables id, delte duplicates
-    print(time.time()- start)
+ 
     # Ranking documents
     ranking = dict()
 
@@ -63,6 +63,7 @@ def search(vec_abstract, index_h, index_c, inverted, alpha):
         
     # Ordenar ranking
     ranking_sort = sorted(ranking.items(), key=lambda x: x[1], reverse=True)
+    print(time.time()- start)
    
     return list(map(lambda x: x[0], ranking_sort[:5])) # Nos quedamos con el top 10
     #return ranking_sort[:5]
