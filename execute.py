@@ -2,7 +2,6 @@ import subprocess
 import requests
 import argparse
 
-
 def checkCall():
     try: 
         response = requests.post('http://localhost:5000/getEmbeddings', json = {'data':'a'})
@@ -29,7 +28,7 @@ def main():
     parser.add_argument('-t', '--type', default='all', choices=['all', 'index','clas'])
 
     args = parser.parse_args()
-    models = ['w2v','fst','brt', 'rbt', 'sci', 'blo'] #stb
+    models = ['stb','blo','sci','w2v','fst','brt','rbt']
 
     try:
         for m in models:
@@ -40,7 +39,6 @@ def main():
                             index(m)
                         if args.type == 'clas' or args.type=="all":
                             classify(m)
-                           
                         proc.kill()
 
     except subprocess.CalledProcessError as err:

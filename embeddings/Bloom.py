@@ -1,6 +1,7 @@
 from transformers import AutoTokenizer, AutoModel
 import torch
 import numpy as np
+from sentence_transformers import SentenceTransformer
 
 class Bloom:
 
@@ -24,3 +25,4 @@ class Bloom:
             self.model = self.model.to(self.device)
             output = self.model(**tab)
             return [i[0] for i in output.last_hidden_state]
+

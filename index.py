@@ -113,7 +113,6 @@ def main():
 
     ignored = 0
     discard = []
- 
     for file in tqdm(files):
         try:
             key = ""

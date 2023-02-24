@@ -141,8 +141,6 @@ def main():
     files = os.listdir(args.input)
     files = [i for i in files if i.endswith(".json")]
 
-    files = files[:50]
-    
     for i in discarted:
         try:
             files.remove(i+".json")
