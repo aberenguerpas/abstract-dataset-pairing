@@ -9,8 +9,8 @@ with open('./mapping.pickle', 'rb') as handle:
 
 all_files = os.listdir('./data2/')
 
-
-f = open('/raid/wake/raw_data/pubmed_sorted.json')
+count = 0
+f = open('/Users/albertoberenguerpastor/Downloads/pubmed_sorted.json')
 objects = ijson.items(f, 'articles.item')
 for obj in tqdm(objects):
     try:
@@ -18,14 +18,20 @@ for obj in tqdm(objects):
         aux['id'] = b[obj['pmid']]
         aux['abstract'] = obj["abstractText"]
         aux['keywords'] = list(obj["mesh"].values())
+        if int(obj['year'])>2016:
+            data = [i for i in all_files if aux["id"] in i]
 
-        #data = glob("./data2/"+aux["id"]+'*.csv')
-        data = [i for i in all_files if aux["id"] in i]
-
-        if data:
-            aux['data'] = data
-            
-            with open("./data3/"+aux['id']+".json", "w") as outfile:
-                json.dump(aux, outfile, indent=4)
+            if data:
+                aux['data'] = data
+                print(count)
+                count+=1
+          
+                with open("./data3/"+aux['id']+".json", "w") as outfile:
+                        json.dump(aux, outfile, indent=4)
+                if count>20000:
+                    break
     except Exception as e:
+        #print(e)
         pass
+
+print("Obtained", count)

@@ -41,12 +41,12 @@ def search(vec_abstract, index_h, index_c, inverted, alpha):
     faiss.normalize_L2(vec_abstract)
 
     # Headers search
-    distances_h, indices_h = index_h.search(vec_abstract, index_h.ntotal - 1)
+    distances_h, indices_h = index_h.search(vec_abstract, 200) #index_h.ntotal - 1
     results_h = [(inverted[r], distances_h[0][i]) for i, r in enumerate(indices_h[0])]
     ids_list += [k for k,_ in results_h]
 
     # Content search
-    distances_c, indices_c = index_c.search(vec_abstract, index_c.ntotal - 1)
+    distances_c, indices_c = index_c.search(vec_abstract, 200) #index_c.ntotal - 1
     results_c = [(inverted[r], distances_c[0][i]) for i, r in enumerate(indices_c[0])]
     ids_list += [k for k,_ in results_c]
 

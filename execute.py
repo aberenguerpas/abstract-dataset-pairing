@@ -1,5 +1,6 @@
 import subprocess
 import requests
+import argparse
 
 def checkCall():
     try: 
@@ -22,6 +23,11 @@ def index(m):
         proc.communicate()
 
 def main():
+
+    parser = argparse.ArgumentParser(description='Process WikiTables corpus')
+    parser.add_argument('-t', '--type', default='all', choices=['all', 'index','clas'])
+
+    args = parser.parse_args()
     models = ['stb','w2v','fst','brt', 'rbt', 'sci', 'blo']
 
     try:
@@ -29,8 +35,10 @@ def main():
             with subprocess.Popen(['./env/bin/python', 'embeddings/main.py', '-m', m]) as proc:
                 while proc.poll() is None:
                     if checkCall() == True:
-                        index(m)
-                        classify(m)
+                        if args.type == 'index' or args.type=="all":
+                            index(m)
+                        if args.type == 'clas' or args.type=="all":
+                            classify(m)
                         proc.kill()
 
     except subprocess.CalledProcessError as err:
