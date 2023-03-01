@@ -34,22 +34,27 @@ def proccessText(text):
         return [text]
 
 
-def search(vec_abstract, index_h, index_c, inverted, alpha):
+def search(vec_abstract, index_h, index_c,index_k, inverted, alpha, mode):
 
     ids_list = []
 
     faiss.normalize_L2(vec_abstract)
-
     # Headers search
 
-    distances_h, indices_h = index_h.search(vec_abstract, 300) #index_h.ntotal - 1
+    distances_h, indices_h = index_h.search(vec_abstract, 300) # 300 index_h.ntotal - 1
     
     results_h = [(inverted[r], distances_h[0][i]) for i, r in enumerate(indices_h[0])]
     ids_list += [k for k,_ in results_h]
+
+    # keywords search
+    distances_k, indices_k = index_k.search(vec_abstract, 300) # 300 index_k.ntotal - 1
+    
+    results_k = [(inverted[r], distances_k[0][i]) for i, r in enumerate(indices_k[0])]
+    ids_list += [k for k,_ in results_k]
    
 
     # Content search
-    distances_c, indices_c = index_c.search(vec_abstract, 300) #index_c.ntotal - 1
+    distances_c, indices_c = index_c.search(vec_abstract, 300) #300 index_c.ntotal - 1
     results_c = [(inverted[r], distances_c[0][i]) for i, r in enumerate(indices_c[0])]
     ids_list += [k for k,_ in results_c]
 
@@ -59,7 +64,7 @@ def search(vec_abstract, index_h, index_c, inverted, alpha):
     ranking = dict()
 
     for id in ids_list:
-        ranking[id]= getScore(id, results_h, results_c, alpha)
+        ranking[id]= getScore(id, results_h, results_c, results_h, alpha, mode)
         
     # Ordenar ranking
     ranking_sort = sorted(ranking.items(), key=lambda x: x[1], reverse=True)
@@ -67,11 +72,12 @@ def search(vec_abstract, index_h, index_c, inverted, alpha):
     return list(map(lambda x: x[0], ranking_sort[:5])) # Nos quedamos con el top 10
     #return ranking_sort[:5]
 
-def getScore(id, results_h, results_c, alpha):
+def getScore(id, results_h, results_c, results_k, alpha, mode):
 
     #Filter only results from an id
     score_c = list(filter(lambda d: d[0]==id, results_c))
     score_h = list(filter(lambda d: d[0]==id, results_h))
+    score_k = list(filter(lambda d: d[0]==id, results_k))
 
     if len(score_h)>0:
         score_h = score_h[0][1]
@@ -83,7 +89,16 @@ def getScore(id, results_h, results_c, alpha):
     else:
         score_c = 0
 
-    score = score_h*alpha + score_c*(1-alpha)
+    if len(score_k)>0:
+        score_k = score_k[0][1]
+    else:
+        score_k = 0
+
+    if mode == 0:
+        score = (score_h*alpha + score_c*(1-alpha))*0.5 + score_k*0.5
+
+    if mode == 1:
+        score = (score_h*alpha + score_c*(1-alpha)) * score_k
 
     return score
 
@@ -124,18 +139,28 @@ def main():
     index_headers = loadIndex(os.path.join(args.indexdir, args.model+'_headers.faiss'))
     # Content collection
     index_content = loadIndex(os.path.join(args.indexdir, args.model+'_content.faiss'))
+    # Keywords collection
+    index_keywords = loadIndex(os.path.join(args.indexdir, args.model+'_keywords.faiss'))
     # Read inversed Index
     inverted = loadInversedIndex(os.path.join(args.indexdir, args.model+'_invertedIndex'))
 
-     # Read discarted
+    # Read discarted
     discarted = loadInversedIndex('./disc')
     discarted = list(dict.fromkeys(discarted))
     # Counters
     mmr = dict()
     precision = dict()
+    """
     for alpha in np.arange(0, 1.1, 0.1):
         mmr[alpha] = []
         precision[alpha] = []
+    """
+
+    # keywords mode
+    for mode in range(2):
+        mmr[mode] = []
+        precision[mode] = []
+
     
     # Read abstracts
     files = os.listdir(args.input)
@@ -158,13 +183,22 @@ def main():
                 abstract = proccessText(data['abstract'])
                 # Create embedding abstract
                 vec_abstract = np.array(getEmbeddings(abstract)).astype(np.float32)
-      
+
                 # Search
-                for alpha in np.arange(0, 1.1, 0.1):
-                    rank = search(vec_abstract, index_headers, index_content, inverted, alpha)
-                    precision[alpha].append(checkPrecision(data['id'], rank))
-                    points = checkPos(data['id'], rank)        
-                    mmr[alpha].append(points)
+                #for alpha in np.arange(0, 1.1, 0.1):
+                alpha = 0.9
+                # para mode 0
+                rank = search(vec_abstract, index_headers, index_content, index_keywords, inverted, alpha, 0)
+                precision[0].append(checkPrecision(data['id'], rank))
+                points = checkPos(data['id'], rank)        
+                mmr[0].append(points)
+                # para mode 1
+                # delete this
+                rank = search(vec_abstract, index_headers, index_content, index_keywords, inverted, alpha, 1)
+            
+                precision[1].append(checkPrecision(data['id'], rank))
+                points = checkPos(data['id'], rank)        
+                mmr[1].append(points)
 
         except Exception as e:
             logger.error("Exception occurred", exc_info=True)
@@ -175,22 +209,37 @@ def main():
     logger.info("Saving info from model "+args.model)
     results.append("-------------------------------------- \n")
 
+    """
     for alpha in np.arange(0, 1.1, 0.1):
         text = 'alpha ' + str(round(alpha,1))+ '- MMR: '+ str(round(np.mean(mmr[alpha]),2))
         logger.info(text)
         results.append(text + "\n")
+    """
+
+    for mode in range(2):
+        text = 'Mode ' + str(round(mode,1))+ '- MMR: '+ str(round(np.mean(mmr[mode]),2))
+        logger.info(text)
+        results.append(text + "\n")
+ 
 
     results.append("-------------------------------------- \n")
+
+    """
     for alpha in np.arange(0, 1.1, 0.1):
         text = 'alpha ' + str(round(alpha,1))+ '. Precision Top 1/3/5: '+ str(np.sum(precision[alpha], axis=0)/len(precision[alpha]))
         logger.info(text)
         results.append(text + "\n")
+    """
 
-    
+    for mode in range(2):
+        text = 'Mode ' + str(round(mode,1))+ '. Precision Top 1/3/5: '+ str(np.sum(precision[mode], axis=0)/len(precision[mode]))
+        logger.info(text)
+        results.append(text + "\n")
+
 
     logger.info('Search time '+ args.model+ ': ' + str(round(time.time() - start_time, 2)) + ' seconds')
 
-    f = open(args.clasification+args.model+".txt", "w")
+    f = open(args.clasification+args.model+"_exp2.txt", "w")
     f.writelines(results)
     f.close()
 

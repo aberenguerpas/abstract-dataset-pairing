@@ -28,7 +28,7 @@ def main():
     parser.add_argument('-t', '--type', default='all', choices=['all', 'index','clas'])
 
     args = parser.parse_args()
-    models = ['stb','blo','sci','w2v','fst','brt','rbt']
+    models = ['rbt','sci','w2v','blo','stb','brt','fst']
 
     try:
         for m in models:

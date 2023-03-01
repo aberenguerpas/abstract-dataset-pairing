@@ -23,7 +23,6 @@ for obj in tqdm(objects):
 
             if data:
                 aux['data'] = data
-                print(count)
                 count+=1
           
                 with open("./data3/"+aux['id']+".json", "w") as outfile:

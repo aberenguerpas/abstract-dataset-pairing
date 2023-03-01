@@ -110,6 +110,7 @@ def main():
 
     index_headers = createIndex(size_vector)
     index_content = createIndex(size_vector)
+    index_keywords = createIndex(size_vector)
 
     ignored = 0
     discard = []
@@ -134,19 +135,27 @@ def main():
                 except Exception:
                     df = pd.read_csv(dfile , encoding = "unicode_escape", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
                 
-
                 # Check if headers are numeric or if all columns are numeric
                 #print(df.head())
                 if isNum(df)>0.2 and len(df.columns.values)<2: #or isNumCol(df)==1:
                     ignored+=1
                     discard.append(key)
                     continue
-        
+                
+                # Add keywords
+                t0 = [" ".join(meta['keywords'])]
+                
+                t0_vec = np.array([getEmbeddings(t0)], dtype="float32")
+  
+                faiss.normalize_L2(t0_vec)
+
+                if len(t0_vec.shape)>2:
+                    t0_vec = t0_vec[0]
+
                 t1 = proccessHeaders(df.columns.values)
                 t1_vec = np.array(getEmbeddings(t1), dtype="float32")
                 if t1_vec.shape[0] > 1:
                     t1_vec = np.array([np.mean(t1_vec, axis=0)], dtype="float32")
-
                 faiss.normalize_L2(t1_vec)
 
                 # Content
@@ -185,6 +194,7 @@ def main():
                     invertedIndex[id[0]] = key
                     index_headers.add_with_ids(t1_vec, id)
                     index_content.add_with_ids(t2_vec, id)
+                    index_keywords.add_with_ids(t0_vec, id)
                 else:
                     discard.append(key)
 
@@ -197,6 +207,7 @@ def main():
     logger.info("Saving indexes "+ args.model + "...")
     saveIndex(index_headers, os.path.join('faiss_data', args.model+'_headers.faiss'))
     saveIndex(index_content, os.path.join('faiss_data', args.model+'_content.faiss'))
+    saveIndex(index_keywords, os.path.join('faiss_data', args.model+'_keywords.faiss'))
     saveInvertedIndex(invertedIndex, os.path.join('faiss_data', args.model+'_invertedIndex'))
     # Save discarted abstracts
     saveInvertedIndex(discard, './disc')

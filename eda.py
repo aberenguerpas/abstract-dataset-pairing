@@ -5,19 +5,19 @@ import numpy as np
 
 def main():
     pd.set_option('display.float_format', lambda x: '%.3f' % x)
-    files_path = '/raid/wake/data/'
+    files_path = './data3/'
     files = os.listdir(files_path)
     files = [i for i in files if i.endswith(".json")]
 
     results = []
     ignorados = 0
-
+    max = 0
     for file in tqdm(files):
         try:
             dataset = dict()
             with open(files_path+file, 'r') as f:
                 data = json.load(f)
-                desc = data['desc'].replace('&nbsp;',' ')
+                desc = data['abstract']
                 n_words = len(desc.split(' '))
                 dataset['n_words_abstract'] = n_words
 
@@ -26,11 +26,14 @@ def main():
                 dataset['numeric_cols'] = []
                 dataset['cat_cols'] = []
 
-                for f in data['files']:
-                    df = pd.read_csv(files_path+f, encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None)
+                for f in data['data']:
+                    df = pd.read_csv('./data2/'+f, encoding = "ISO-8859-1", on_bad_lines='skip', engine='python', sep = None)
 
                     dataset['n_rows'].append(len(df.index))
                     dataset['n_cols'].append(len(df.columns))
+
+                    if len(df.columns)>80 or len(df.index) >100:
+                        print(f)
 
                     num_cols = 0
                     for col in df.columns:
