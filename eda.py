@@ -11,7 +11,7 @@ def main():
 
     results = []
     ignorados = 0
-    max = 0
+
     for file in tqdm(files):
         try:
             dataset = dict()
@@ -32,7 +32,7 @@ def main():
                     dataset['n_rows'].append(len(df.index))
                     dataset['n_cols'].append(len(df.columns))
 
-                    if len(df.columns)>80 or len(df.index) >100:
+                    if len(df.columns)>30 or len(df.index) >70:
                         print(f)
 
                     num_cols = 0
@@ -43,12 +43,12 @@ def main():
                     dataset['numeric_cols'].append(num_cols)
                     dataset['cat_cols'].append(len(df.columns) - num_cols)
 
-                dataset['n_rows'] = np.sum(dataset['n_rows'], axis=0)
-                dataset['n_cols'] = np.sum(dataset['n_cols'], axis=0)
-                dataset['numeric_cols'] = np.sum(dataset['numeric_cols'], axis=0)
-                dataset['cat_cols'] = np.sum(dataset['cat_cols'], axis=0)
+                dataset['n_rows'] = np.sum(dataset['n_rows'], axis=0)/len(data['data'])
+                dataset['n_cols'] = np.sum(dataset['n_cols'], axis=0)/len(data['data'])
+                dataset['numeric_cols'] = np.sum(dataset['numeric_cols'], axis=0)/len(data['data'])
+                dataset['cat_cols'] = np.sum(dataset['cat_cols'], axis=0)/len(data['data'])
                                    
-                results.append(dataset)
+            results.append(dataset)
 
         except Exception as e:
             print(e)

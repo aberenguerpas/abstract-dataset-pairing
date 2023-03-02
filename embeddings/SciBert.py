@@ -23,8 +23,6 @@ class SciBert:
             self.model = self.model.to(self.device)
             output = self.model(**tab)
             return [i[0] for i in output.last_hidden_state]
-        
-
 """
     def __init__(self):
         self.model = SentenceTransformer('pritamdeka/S-Scibert-snli-multinli-stsb') #device='cuda'

@@ -64,7 +64,7 @@ def search(vec_abstract, index_h, index_c,index_k, inverted, alpha, mode):
     ranking = dict()
 
     for id in ids_list:
-        ranking[id]= getScore(id, results_h, results_c, results_h, alpha, mode)
+        ranking[id]= getScore(id, results_h, results_c, results_k, alpha, mode)
         
     # Ordenar ranking
     ranking_sort = sorted(ranking.items(), key=lambda x: x[1], reverse=True)
@@ -93,13 +93,13 @@ def getScore(id, results_h, results_c, results_k, alpha, mode):
         score_k = score_k[0][1]
     else:
         score_k = 0
-
+   
     if mode == 0:
         score = (score_h*alpha + score_c*(1-alpha))*0.5 + score_k*0.5
 
     if mode == 1:
         score = (score_h*alpha + score_c*(1-alpha)) * score_k
-
+    
     return score
 
 def checkPos(id, lis):
@@ -165,7 +165,7 @@ def main():
     # Read abstracts
     files = os.listdir(args.input)
     files = [i for i in files if i.endswith(".json")]
-
+    #files = files[:300]
     for i in discarted:
         try:
             files.remove(i+".json")

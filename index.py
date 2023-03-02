@@ -8,7 +8,6 @@ import pandas as pd
 import time
 import argparse
 import logging
-from glob import glob
 
 
 def getEmbeddings(data):
@@ -97,7 +96,7 @@ def main():
     files_path2 ="./data2/"
 
     files = [i for i in os.listdir(files_path) if i.endswith(".json")]
-  
+    #files = files[:300]
     invertedIndex = dict()
     if args.model == 'sci' or args.model == 'brt':
         size_vector = 768
@@ -136,7 +135,6 @@ def main():
                     df = pd.read_csv(dfile , encoding = "unicode_escape", on_bad_lines='skip', engine='python', sep = None, nrows=1020)
                 
                 # Check if headers are numeric or if all columns are numeric
-                #print(df.head())
                 if isNum(df)>0.2 and len(df.columns.values)<2: #or isNumCol(df)==1:
                     ignored+=1
                     discard.append(key)
